@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Outland</title>
+    <style>
+      :root {
+        --yellow: #f5d000;
+        --yellow-strong: #ffd400;
+        --yellow-soft: #ffe97a;
+        --dark: #111111;
+        --bg: #f3f1ec;
+        --panel: #ffffff;
+        --line: rgba(17, 17, 17, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--dark);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 18px;
+        margin-bottom: 28px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .logo-wrap {
+        width: 60px;
+        height: 60px;
+        position: relative;
+        display: grid;
+        place-items: center;
+        background: var(--yellow);
+        border: 3px solid var(--dark);
+        transform: rotate(45deg);
+        box-shadow: 6px 6px 0 var(--dark);
+      }
+
+      .logo-text {
+        transform: rotate(-45deg);
+        font-weight: 900;
+        font-size: 1.7rem;
+        letter-spacing: 0.04em;
+      }
+
+      .title-block {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .title {
+        font-size: clamp(2.1rem, 4vw, 3.4rem);
+        line-height: 1;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: none;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        opacity: 0.8;
+      }
+
+      .tabs {
+        display: inline-flex;
+        gap: 12px;
+        background: rgba(17, 17, 17, 0.04);
+        border: 2px solid var(--dark);
+        padding: 8px;
+        border-radius: 18px;
+      }
+
+      .tab {
+        border: 2px solid transparent;
+        background: transparent;
+        color: var(--dark);
+        font-weight: 800;
+        font-size: 1.05rem;
+        border-radius: 12px;
+        padding: 12px 18px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tab.active {
+        background: var(--yellow);
+        border-color: var(--dark);
+        box-shadow: 4px 4px 0 var(--dark);
+      }
+
+      .settings-btn {
+        width: 50px;
+        height: 50px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--yellow);
+        border-color: var(--dark);
+        border-radius: 12px;
+        position: relative;
+        margin-left: auto;
+      }
+
+      .settings-btn svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .settings-btn:hover {
+        background: var(--yellow-soft);
+        box-shadow: 4px 4px 0 var(--dark);
+        transform: rotate(-15deg);
+      }
+
+      .settings-btn:active {
+        transform: translate(2px, 2px) rotate(-15deg);
+        box-shadow: 2px 2px 0 var(--dark);
+      }
+
+      .day-switcher {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 14px 0 22px;
+      }
+
+      .day-btn {
+        border: 2px solid var(--dark);
+        background: #fff;
+        color: var(--dark);
+        font-weight: 800;
+        font-size: 0.9rem;
+        padding: 10px 14px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .empty-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 220px;
+        border: 3px solid var(--dark);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.7);
+        box-shadow: 8px 8px 0 var(--dark);
+        text-align: center;
+        font-size: clamp(1.4rem, 2vw, 2.1rem);
+        font-weight: 900;
+        padding: 30px 20px;
+      }
+
+      .day-btn.active {
+        background: var(--yellow);
+        box-shadow: 4px 4px 0 var(--dark);
+      }
+
+      .panel {
+        display: none;
+      }
+
+      .panel.active {
+        display: block;
+      }
+
+      .subject-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        gap: 22px;
+        margin-top: 14px;
+      }
+
+      .book-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(120px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .book-btn {
+        position: relative;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 12px 10px;
+        background: var(--yellow);
+        color: var(--dark);
+        border: 2px solid var(--dark);
+        box-shadow: 6px 6px 0 var(--dark);
+        font-weight: 900;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        border-radius: 10px;
+        transition: transform 0.15s ease, background 0.2s ease;
+      }
+
+      .book-btn.disabled {
+        background: #f0f0f0;
+        color: #7a7a7a;
+        border-color: rgba(17,17,17,0.08);
+        box-shadow: none;
+        cursor: default;
+        opacity: 0.9;
+      }
+
+      .subject-btn {
+        position: relative;
+        min-height: 170px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 26px 18px;
+        background: var(--yellow);
+        color: var(--dark);
+        border: 3px solid var(--dark);
+        box-shadow: 8px 8px 0 var(--dark);
+        font-weight: 900;
+        font-size: clamp(1.1rem, 2vw, 2rem);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, background 0.25s ease, box-shadow 0.2s ease, opacity 0.2s ease, filter 0.2s ease;
+      }
+
+      .subject-btn:hover {
+        background: var(--yellow-soft);
+        transform: translate(-2px, -2px);
+        box-shadow: 12px 12px 0 var(--dark);
+      }
+
+      .subject-btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: 4px 4px 0 var(--dark);
+      }
+
+      .subject-btn.past {
+        background: #d8d8d8;
+        color: #4f4f4f;
+        border-color: #6d6d6d;
+        box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.35);
+        opacity: 0.7;
+        filter: grayscale(0.3);
+      }
+
+      .subject-btn.past:hover {
+        background: #d0d0d0;
+      }
+
+      .subject-number {
+        position: absolute;
+        top: 10px;
+        left: 12px;
+        min-width: 26px;
+        height: 26px;
+        display: grid;
+        place-items: center;
+        border: 2px solid var(--dark);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.7);
+        font-size: 0.75rem;
+        font-weight: 900;
+      }
+
+      .utility-bar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 18px;
+        margin: 18px 0 26px;
+      }
+
+      .info-card {
+        border: 2px solid var(--dark);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.7);
+        box-shadow: 6px 6px 0 var(--dark);
+        padding: 18px 20px;
+      }
+
+      .info-label {
+        display: block;
+        font-size: 0.74rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.7;
+        margin-bottom: 8px;
+      }
+
+      .info-value {
+        font-size: clamp(1.1rem, 2vw, 1.6rem);
+        font-weight: 900;
+        line-height: 1.3;
+      }
+
+      .schedule-wrap {
+        background: rgba(255, 255, 255, 0.5);
+        border: 2px solid var(--dark);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 8px 8px 0 var(--dark);
+      }
+
+      .schedule-header {
+        padding: 18px 20px;
+        background: var(--yellow);
+        border-bottom: 2px solid var(--dark);
+        font-size: clamp(1.5rem, 2vw, 2.2rem);
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+      }
+
+      thead th {
+        background: #f8f3d0;
+        border: 2px solid var(--dark);
+        padding: 14px 12px;
+        font-size: 1rem;
+        text-transform: uppercase;
+      }
+
+      tbody td {
+        border: 2px solid var(--dark);
+        padding: 14px 12px;
+        text-align: center;
+        font-size: 0.98rem;
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      tbody td:first-child {
+        text-align: left;
+        font-weight: 800;
+        background: #fffbe3;
+      }
+
+      thead th.today {
+        background: #ffe14d;
+      }
+
+      tbody td.today-cell {
+        background: #fff0a8;
+        font-weight: 900;
+      }
+
+      .secret-popup {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 1000;
+        padding: 20px;
+      }
+
+      .secret-box {
+        width: min(520px, 100%);
+        background: #fff;
+        border: 3px solid var(--dark);
+        border-radius: 22px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+        padding: 24px;
+      }
+
+      .secret-title {
+        margin: 0 0 16px;
+        font-size: 1.4rem;
+        letter-spacing: 0.04em;
+      }
+
+      .secret-input {
+        width: 100%;
+        border: 2px solid var(--dark);
+        border-radius: 14px;
+        font-size: 1rem;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+      }
+
+      .secret-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+
+      .admin-panel {
+        position: fixed;
+        right: 20px;
+        top: 80px;
+        width: min(420px, calc(100% - 40px));
+        max-height: calc(100vh - 120px);
+        overflow: auto;
+        background: #fff;
+        border: 3px solid var(--dark);
+        border-radius: 24px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+        padding: 20px;
+        z-index: 900;
+      }
+
+      .admin-panel.hidden,
+      .secret-popup.hidden {
+        display: none !important;
+      }
+
+      .admin-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .admin-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .admin-grid label {
+        display: grid;
+        gap: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+      }
+
+      .admin-grid input,
+      .admin-grid textarea {
+        width: 100%;
+        border: 2px solid var(--dark);
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-size: 0.95rem;
+      }
+
+      .admin-grid textarea {
+        resize: vertical;
+        min-height: 220px;
+      }
+
+      .admin-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+
+      .device-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .device-list li {
+        padding: 12px 14px;
+        background: #f6f0b4;
+        border: 2px solid var(--dark);
+        border-radius: 14px;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+
+      .footer-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 24px;
+        font-weight: 600;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #7a7a7a;
+      }
+
+      .dev-icon {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #8a8a8a;
+        display: inline-block;
+        box-shadow: 0 0 0 2px rgba(122, 122, 122, 0.2);
+      }
+
+      .desktop-mode-warning {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 2000;
+        padding: 20px;
+        backdrop-filter: blur(2px);
+      }
+
+      .desktop-mode-warning.show {
+        display: flex;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .desktop-mode-content {
+        background: linear-gradient(135deg, #ffffff 0%, #f9f7f2 100%);
+        border: 3px solid var(--dark);
+        border-radius: 32px;
+        padding: 50px 40px;
+        max-width: 520px;
+        text-align: center;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(40px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .warning-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 28px;
+        background: linear-gradient(135deg, #ffd400 0%, #ffed4e 100%);
+        border: 3px solid var(--dark);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 8px 8px 0 var(--dark), inset -2px -2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .warning-icon svg {
+        width: 60px;
+        height: 60px;
+        filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
+      }
+
+      .desktop-mode-content h2 {
+        margin: 0 0 16px;
+        font-size: 1.9rem;
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        color: var(--dark);
+        text-transform: uppercase;
+      }
+
+      .desktop-mode-content p {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: #5a5a5a;
+        line-height: 1.6;
+      }
+
+      .settings-panel {
+        position: fixed;
+        right: 20px;
+        top: 80px;
+        width: min(380px, calc(100% - 40px));
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        background: #fff;
+        border: 3px solid var(--dark);
+        border-radius: 24px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+        padding: 24px;
+        z-index: 950;
+        display: none;
+      }
+
+      .settings-panel.show {
+        display: block;
+        animation: slideInRight 0.3s ease-out;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .settings-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid var(--dark);
+      }
+
+      .settings-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+      }
+
+      .close-settings {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+      }
+
+      .settings-section {
+        margin-bottom: 22px;
+      }
+
+      .settings-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        color: var(--dark);
+      }
+
+      .color-picker {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .color-option {
+        width: 50px;
+        height: 50px;
+        border: 3px solid var(--dark);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .color-option:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .color-option.active {
+        box-shadow: 0 0 0 3px var(--dark);
+      }
+
+      .color-option.yellow {
+        background: #f5d000;
+      }
+
+      .color-option.green {
+        background: #00d084;
+      }
+
+      .color-option.blue {
+        background: #0066ff;
+      }
+
+      .color-option.red {
+        background: #ff3333;
+      }
+
+      .toggle-switch {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 56px;
+        height: 32px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.3s;
+        border-radius: 32px;
+        border: 2px solid var(--dark);
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: var(--yellow);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(24px);
+      }
+
+      .lang-options {
+        display: flex;
+        gap: 10px;
+      }
+
+      .lang-btn {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid var(--dark);
+        border-radius: 12px;
+        background: #fff;
+        font-weight: 800;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .lang-btn.active {
+        background: var(--yellow);
+        box-shadow: 4px 4px 0 var(--dark);
+      }
+
+      .lang-btn:hover {
+        background: var(--yellow-soft);
+      }
+
+      body.dark-mode {
+        background: #1a1a1a;
+        color: #f0f0f0;
+      }
+
+      body.dark-mode .page,
+      body.dark-mode .secret-box,
+      body.dark-mode .admin-panel,
+      body.dark-mode .settings-panel,
+      body.dark-mode table {
+        background: #2a2a2a;
+        color: #f0f0f0;
+      }
+
+      body.dark-mode .topbar,
+      body.dark-mode .info-card,
+      body.dark-mode .schedule-wrap {
+        border-bottom-color: rgba(240, 240, 240, 0.2);
+      }
+
+      body.dark-mode .info-card,
+      body.dark-mode .day-btn,
+      body.dark-mode table,
+      body.dark-mode .secret-box,
+      body.dark-mode .admin-panel,
+      body.dark-mode .settings-panel {
+        border-color: #555;
+        background: #2a2a2a;
+      }
+
+      body.dark-mode thead th {
+        background: #3a3a3a;
+        border-color: #555;
+        color: #f0f0f0;
+      }
+
+      body.dark-mode tbody td {
+        background: #2a2a2a;
+        border-color: #555;
+        color: #f0f0f0;
+      }
+
+      body.dark-mode tbody td:first-child {
+        background: #3a3a3a;
+      }
+
+      body.dark-mode .settings-header {
+        border-bottom-color: #555;
+      }
+
+      body.dark-mode .settings-label {
+        color: #f0f0f0;
+      }
+
+      body.dark-mode .slider {
+        background-color: #555;
+        border-color: #777;
+      }
+
+      body.dark-mode .day-btn.active {
+        background: var(--yellow);
+        color: #111111;
+        box-shadow: 4px 4px 0 rgba(240, 240, 240, 0.5);
+      }
+
+
+
+      .font-size-options {
+        display: flex;
+        gap: 8px;
+      }
+
+      .font-size-btn {
+        flex: 1;
+        padding: 10px 14px;
+        border: 2px solid var(--dark);
+        border-radius: 10px;
+        background: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .font-size-btn.active {
+        background: var(--yellow);
+        box-shadow: 3px 3px 0 var(--dark);
+      }
+
+      .font-size-btn:hover {
+        background: var(--yellow-soft);
+      }
+
+      body.font-size-small {
+        font-size: 14px;
+      }
+
+      body.font-size-large {
+        font-size: 18px;
+      }
+
+      @media (max-width: 800px) {
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .tabs {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .utility-bar {
+          grid-template-columns: 1fr;
+        }
+
+        .subject-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .subject-btn {
+          min-height: 120px;
+        }
+
+        .schedule-wrap {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+          min-width: 100%;
+          table-layout: fixed;
+        }
+
+        thead th,
+        tbody td {
+          padding: 10px 8px;
+          font-size: 0.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand" aria-label="Логотип Outland">
+          <div class="logo-wrap">
+            <div class="logo-text">O</div>
+          </div>
+          <div class="title-block">
+            <div class="title">Outland</div>
+            <div class="subtitle">9-Г</div>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Навігація сайту">
+          <button class="tab active" type="button" data-target="subjects-panel">Предмети</button>
+            <button class="tab" type="button" data-target="books-panel">Підручники</button>
+            <button class="tab" type="button" data-target="schedule-panel">Розклад</button>
+          <button class="tab settings-btn" type="button" id="settingsBtn" title="Налаштування">
+            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="2" fill="#111111"/>
+              <path d="M12 5C8.13 5 5 8.13 5 12s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm3.5-9c-.83 0-1.5-.67-1.5-1.5S14.67 5 15.5 5 17 5.67 17 6.5 16.33 8 15.5 8z" fill="#111111"/>
+              <path d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l1.85-1.41c.17-.13.22-.38.1-.59l-1.74-3.01c-.12-.22-.38-.29-.59-.17l-2.18 1.73c-.45-.35-.96-.62-1.5-.81l-.33-2.76c-.04-.24-.24-.41-.49-.41h-3.48c-.25 0-.45.17-.49.41l-.33 2.76c-.54.19-1.05.46-1.5.81l-2.18-1.73c-.22-.12-.47-.05-.59.17L2.74 8.87c-.12.21-.08.46.1.59l1.85 1.41c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-1.85 1.41c-.17.13-.22.38-.1.59l1.74 3.01c.12.22.38.29.59.17l2.18-1.73c.45.35.96.62 1.5.81l.33 2.76c.04.24.24.41.49.41h3.48c.25 0 .45-.17.49-.41l.33-2.76c.54-.19 1.05-.46 1.5-.81l2.18 1.73c.22.12.47.05.59-.17l1.74-3.01c.12-.22.08-.46-.1-.59l-1.85-1.41zM12 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z" fill="#111111"/>
+            </svg>
+          </button>
+        </nav>
+      </header>
+
+      <div class="utility-bar">
+        <div class="info-card">
+          <span class="info-label">Сьогодні</span>
+          <div class="info-value" id="todayLabel">Понеділок</div>
+        </div>
+        <div class="info-card">
+          <span class="info-label">Наступний урок</span>
+          <div class="info-value" id="nextLessonLabel">Завантаження...</div>
+        </div>
+      </div>
+
+      <div class="day-switcher" id="daySwitcher" aria-label="Перемикання днів"></div>
+
+      <main>
+        <section id="subjects-panel" class="panel active" aria-label="Предмети">
+          <div class="subject-grid" id="subjectGrid"></div>
+        </section>
+
+        <section id="books-panel" class="panel" aria-label="Підручники">
+          <div class="book-grid" id="bookGrid"></div>
+        </section>
+
+        <section id="schedule-panel" class="panel" aria-label="Розклад">
+          <div class="schedule-wrap">
+            <div class="schedule-header" id="scheduleTitle">Розклад</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Час</th>
+                  <th>Предмет</th>
+                </tr>
+              </thead>
+              <tbody id="scheduleBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <div class="footer-note">
+        <span class="dev-icon" aria-hidden="true"></span>
+        <span>By YonoDev / Hlib ILNYTSKYI</span>
+      </div>
+    </div>
+
+    <div id="secretPopup" class="secret-popup hidden" aria-hidden="true">
+      <div class="secret-box">
+        <h2 class="secret-title">Секретна команда</h2>
+        <input id="secretInput" class="secret-input" type="text" placeholder="inject command" autocomplete="off" />
+        <div class="secret-actions">
+          <button class="ghost-btn" id="secretCancel" type="button">Закрити</button>
+          <button class="primary-btn" id="secretSubmit" type="button">Ввести</button>
+        </div>
+      </div>
+    </div>
+
+    <aside id="adminPanel" class="admin-panel hidden" aria-label="Адмін-панель">
+      <div class="admin-panel-header">
+        <h3>Адмін-панель</h3>
+        <button class="ghost-btn" id="closeAdminPanel" type="button">Вихід</button>
+      </div>
+      <div class="admin-grid">
+        <label>
+          Назва сайту
+          <input id="adminTitleInput" type="text" />
+        </label>
+        <label>
+          Підзаголовок
+          <input id="adminSubtitleInput" type="text" />
+        </label>
+        <label class="full-width">
+          Розклад JSON
+          <textarea id="adminScheduleInput" rows="14"></textarea>
+        </label>
+        <label class="full-width">
+          Підручники JSON
+          <textarea id="adminPdfInput" rows="8" placeholder='{"Англійська":"https://...pdf"}'></textarea>
+        </label>
+      </div>
+      <div class="admin-actions">
+        <button class="primary-btn" id="saveAdminData" type="button">Зберегти</button>
+        <button class="danger-btn" id="resetAdminData" type="button">Скинути на стандарт</button>
+      </div>
+      <h4>Пристрої онлайн</h4>
+      <ul id="deviceList" class="device-list"></ul>
+    </aside>
+
+    <div id="settingsPanel" class="settings-panel">
+      <div class="settings-header">
+        <h3 id="settingsTitle">Налаштування</h3>
+        <button class="close-settings" id="closeSettings">&times;</button>
+      </div>
+
+      <div class="settings-section">
+        <label class="settings-label" id="themeLabel">Тема</label>
+        <div class="toggle-switch">
+          <label class="switch">
+            <input type="checkbox" id="darkModeToggle" />
+            <span class="slider"></span>
+          </label>
+          <span id="themeName">Світлий</span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <label class="settings-label" id="colorLabel">Колір акценту</label>
+        <div class="color-picker">
+          <div class="color-option yellow active" data-color="yellow" title="Жовтий"></div>
+          <div class="color-option green" data-color="green" title="Зелений"></div>
+          <div class="color-option blue" data-color="blue" title="Синій"></div>
+          <div class="color-option red" data-color="red" title="Червоний"></div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div id="desktopModeWarning" class="desktop-mode-warning">
+      <div class="desktop-mode-content">
+        <div class="warning-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Треугольник -->
+            <path d="M12 2L2 20h20L12 2Z" fill="#111111" stroke="#111111" stroke-width="1.5" stroke-linejoin="round"/>
+            <!-- Восклицательный знак -->
+            <circle cx="12" cy="16" r="1.2" fill="#ffd400"/>
+            <rect x="11.2" y="9" width="1.6" height="5.5" fill="#ffd400" rx="0.4"/>
+          </svg>
+        </div>
+        <h2>Увага</h2>
+        <p>Увімкніть "версію для ПК" у меню браузера для правильної роботи сервісу.</p>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+      import {
+        getDatabase,
+        ref,
+        get,
+        set,
+        onValue,
+        remove,
+        onDisconnect
+      } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+      const firebaseConfig = {
+        apiKey: 'AIzaSyCUN4coxW6yb7MwoTkbDDHa3URIDGDWuw8',
+        authDomain: 'math-project-8195b.firebaseapp.com',
+        databaseURL: 'https://math-project-8195b-default-rtdb.europe-west1.firebasedatabase.app',
+        projectId: 'math-project-8195b',
+        storageBucket: 'math-project-8195b.appspot.com',
+        messagingSenderId: '947622423521',
+        appId: '1:947622423521:web:3038ae8b6be7d8c9f740a0',
+        measurementId: 'G-J8JX4XPGHS'
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+
+      const tabs = document.querySelectorAll('.tab');
+      const panels = document.querySelectorAll('.panel');
+      const dayNames = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', "П'ятниця"];
+      const meetWebLink = 'https://meet.google.com/hjj-irbi-bfv?authuser=0';
+      const subjectMeetMap = {
+        'Англійська': 'https://meet.google.com/phi-dznq-yrg?authuser=6',
+        'Математика': 'https://meet.google.com/phi-dznq-yrg?authuser=6',
+        'Всесвітня історія': 'https://meet.google.com/swu-zivk-oiw?authuser=6&hs=179',
+        'Географія': 'https://meet.google.com/jud-yrfg-juh?authuser=6&hs=179'
+      };
+      const defaultPdfMap = {
+        'Англійська': '',
+        'Математика': '',
+        'Українська мова': '',
+        'Українська література': '',
+        'Всесвітня історія': '',
+        'Інформатика': '',
+        'Географія': '',
+        'Фізика': 'fizika.pdf',
+        'Хімія': 'himiya.pdf',
+        'Біологія': '',
+        'Історія України': '',
+        'Алгебра': 'algebra.pdf',
+        'Геометрія': 'geometriya.pdf',
+        'Зарубіжна література': 'zarybizhnaliteratyra.pdf',
+        'Німецька мова': 'nemeckiy.pdf',
+        'Захист вітчизни': '',
+        'Громадянська освіта': ''
+      };
+      let subjectPdfMap = JSON.parse(JSON.stringify(defaultPdfMap));
+      const lessonDuration = 30;
+      const STORAGE_KEYS = {
+        selectedDay: 'outland.selectedDay',
+        adminMode: 'outland.adminMode',
+        darkMode: 'outland.darkMode',
+        accentColor: 'outland.accentColor',
+        language: 'outland.language'
+      };
+
+      const translations = {
+        uk: {
+          subjects: 'Предмети',
+          schedule: 'Розклад',
+          today: 'Сьогодні',
+          nextLesson: 'Наступний урок',
+          settings: 'Налаштування',
+          theme: 'Тема',
+          light: 'Світлий',
+          dark: 'Темний',
+          accentColor: 'Колір акценту',
+          language: 'Мова',
+          ukrainian: 'Українська',
+          russian: 'Русский',
+          warning: 'Увага',
+          desktopMode: 'Увімкніть "версію для ПК" у меню браузера для правильної роботи сервісу.',
+          admin: 'Адмін-панель',
+          exit: 'Вихід',
+          save: 'Зберегти',
+          reset: 'Скинути на стандарт',
+          weekend: 'Вихідний',
+          rest: '☕ Відпочивай',
+          noLessons: '✕ Немає уроків',
+          invalidCommand: 'Невірна команда. Введіть auth\\yono',
+          invalidJSON: 'Невірний JSON. Перевірте розклад.',
+          noActiveDevices: 'Немає активних пристроїв',
+          onlineDevices: 'Пристрої онлайн',
+          loading: 'Завантаження...'
+        },
+        ru: {
+          subjects: 'Предметы',
+          schedule: 'Расписание',
+          today: 'Сегодня',
+          nextLesson: 'Следующий урок',
+          settings: 'Настройки',
+          theme: 'Тема',
+          light: 'Светлая',
+          dark: 'Тёмная',
+          accentColor: 'Цвет акцента',
+          language: 'Язык',
+          ukrainian: 'Українська',
+          russian: 'Русский',
+          warning: 'Внимание',
+          desktopMode: 'Включите "версию для ПК" в меню браузера для правильной работы сервиса.',
+          admin: 'Админ-панель',
+          exit: 'Выход',
+          save: 'Сохранить',
+          reset: 'Вернуть на стандартные',
+          weekend: 'Выходной',
+          rest: '☕ Отдыхай',
+          noLessons: '✕ Нет уроков',
+          invalidCommand: 'Неверная команда. Введите auth\\yono',
+          invalidJSON: 'Неверный JSON. Проверьте расписание.',
+          noActiveDevices: 'Нет активных устройств',
+          onlineDevices: 'Устройства онлайн',
+          loading: 'Загрузка...'
+        }
+      };
+
+      const defaultSchedule = {
+        'Понеділок': [
+          { number: 1, time: '08:30', subject: 'Англійська' },
+          { number: 2, time: '09:10', subject: 'Математика' },
+          { number: 3, time: '09:50', subject: 'Українська мова' },
+          { number: 4, time: '10:30', subject: 'Українська література' },
+          { number: 5, time: '11:10', subject: 'Всесвітня історія' },
+          { number: 6, time: '11:50', subject: 'Інформатика' },
+          { number: 7, time: '12:50', subject: 'Географія' },
+          { number: 8, time: '13:30', subject: 'Вільний' }
+        ],
+        'Вівторок': [
+          { number: 1, time: '08:30', subject: 'Геометрія' },
+          { number: 2, time: '09:10', subject: 'Українська мова' },
+          { number: 3, time: '09:50', subject: 'Хімія' },
+          { number: 4, time: '10:30', subject: 'Зарубіжна література' },
+          { number: 5, time: '11:10', subject: 'Фізика' },
+          { number: 6, time: '11:50', subject: 'Англійська мова' },
+          { number: 7, time: '12:50', subject: 'Біологія' },
+          { number: 8, time: '13:30', subject: 'Інформатика' }
+        ],
+        'Середа': [
+          { number: 1, time: '08:00', subject: 'Англійська' },
+          { number: 2, time: '08:40', subject: 'Математика' },
+          { number: 3, time: '09:20', subject: 'Українська мова' },
+          { number: 4, time: '10:00', subject: 'Українська література' },
+          { number: 5, time: '10:40', subject: 'Всесвітня історія' },
+          { number: 6, time: '11:20', subject: 'Інформатика' },
+          { number: 7, time: '12:20', subject: 'Географія' }
+        ],
+        'Четвер': [
+          { number: 1, time: '08:30', subject: 'Українська мова' },
+          { number: 2, time: '09:10', subject: 'Біологія' },
+          { number: 3, time: '09:50', subject: 'Геометрія' },
+          { number: 4, time: '10:30', subject: 'Фізика' },
+          { number: 5, time: '11:10', subject: 'Англійська мова' },
+          { number: 6, time: '11:50', subject: 'Історія Всесвітня' },
+          { number: 7, time: '12:50', subject: 'Інформатика' },
+          { number: 8, time: '13:30', subject: 'Українська література' }
+        ],
+        "П'ятниця": [
+          { number: 1, time: '08:30', subject: 'Алгебра' },
+          { number: 2, time: '09:10', subject: 'Геометрія' },
+          { number: 3, time: '09:50', subject: 'Хімія' },
+          { number: 4, time: '10:30', subject: 'Історія України' },
+          { number: 5, time: '11:10', subject: 'Фізика' },
+          { number: 6, time: '11:50', subject: 'Біологія' },
+          { number: 7, time: '12:50', subject: 'Англійська мова' },
+          { number: 8, time: '13:30', subject: 'Українська мова' }
+        ]
+      };
+
+      let selectedDay = 'Понеділок';
+      let isAdmin = localStorage.getItem(STORAGE_KEYS.adminMode) === '1';
+      let siteState = {
+        pageTitle: 'Outland',
+        subtitle: '9-Г',
+        schedule: JSON.parse(JSON.stringify(defaultSchedule))
+      };
+
+      let userSettings = {
+        darkMode: localStorage.getItem(STORAGE_KEYS.darkMode) === '1' || false,
+        accentColor: localStorage.getItem(STORAGE_KEYS.accentColor) || 'yellow'
+      };
+
+      function t(key) {
+        return translations.uk[key];
+      }
+
+      function applySettings() {
+        // Применяем тему
+        if (userSettings.darkMode) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+
+        // Применяем цвет
+        const colorMap = {
+          yellow: { primary: '#f5d000', strong: '#ffd400', soft: '#ffe97a' },
+          green: { primary: '#00d084', strong: '#00e699', soft: '#33e6b3' },
+          blue: { primary: '#0066ff', strong: '#1a7fff', soft: '#4d99ff' },
+          red: { primary: '#ff3333', strong: '#ff6666', soft: '#ff9999' }
+        };
+
+        const colors = colorMap[userSettings.accentColor];
+        document.documentElement.style.setProperty('--yellow', colors.primary);
+        document.documentElement.style.setProperty('--yellow-strong', colors.strong);
+        document.documentElement.style.setProperty('--yellow-soft', colors.soft);
+      }
+
+      function saveSettings() {
+        localStorage.setItem(STORAGE_KEYS.darkMode, userSettings.darkMode ? '1' : '0');
+        localStorage.setItem(STORAGE_KEYS.accentColor, userSettings.accentColor);
+      }
+
+      function toggleDarkMode() {
+        userSettings.darkMode = !userSettings.darkMode;
+        applySettings();
+        saveSettings();
+        updateSettingsUI();
+      }
+
+      function setAccentColor(color) {
+        userSettings.accentColor = color;
+        applySettings();
+        saveSettings();
+        updateSettingsUI();
+      }
+
+      function updateSettingsUI() {
+        // Обновляем тему
+        document.getElementById('darkModeToggle').checked = userSettings.darkMode;
+        document.getElementById('themeName').textContent = userSettings.darkMode ? t('dark') : t('light');
+
+        // Обновляем цвет
+        document.querySelectorAll('.color-option').forEach(el => {
+          if (el.dataset.color === userSettings.accentColor) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        });
+
+        // Обновляем текст в панели
+        document.getElementById('settingsTitle').textContent = 'Налаштування';
+        document.getElementById('themeLabel').textContent = 'Тема';
+        document.getElementById('colorLabel').textContent = 'Колір акценту';
+      }
+
+      function openSettings() {
+        document.getElementById('settingsPanel').classList.add('show');
+      }
+
+      function closeSettings() {
+        document.getElementById('settingsPanel').classList.remove('show');
+      }
+
+      function clone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      }
+
+      let desktopWarningShown = false;
+
+      function checkDesktopMode() {
+        const warning = document.getElementById('desktopModeWarning');
+        const isMobile = isMobileDevice();
+        const isNarrow = window.innerWidth < 1024;
+        
+        // Если мобильное устройство И окно узко - показываем уведомление
+        if (isMobile && isNarrow) {
+          warning.classList.add('show');
+          desktopWarningShown = true;
+        } 
+        // Если было показано уведомление, но теперь окно расширилось - обновляем
+        else if (desktopWarningShown && !isNarrow) {
+          warning.classList.remove('show');
+          desktopWarningShown = false;
+          setTimeout(() => location.reload(), 300);
+        } 
+        // Иначе - скрываем уведомление
+        else {
+          warning.classList.remove('show');
+          desktopWarningShown = false;
+        }
+      }
+
+      // Слушаем изменения размера окна
+      window.addEventListener('resize', checkDesktopMode);
+      window.addEventListener('orientationchange', () => {
+        setTimeout(checkDesktopMode, 100);
+      });
+
+      function openMeet(code = 'hjj-irbi-bfv') {
+        const url = `https://meet.google.com/${code}`;
+        
+        if (/Android/i.test(navigator.userAgent)) {
+          // Правильний Intent URI з fallback URL для Android
+          const fallbackUrl = encodeURIComponent(url);
+          const intentUrl = `intent://meet.google.com/${code}#Intent;scheme=https;package=com.google.android.apps.meetings;S.browser_fallback_url=${fallbackUrl};end`;
+          window.location.href = intentUrl;
+          return;
+        }
+
+        // Для iOS та десктопу
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+
+      function getKyivParts() {
+        const formatter = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Europe/Kyiv',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
+        const parts = formatter.formatToParts(new Date());
+        const values = {};
+        parts.forEach((part) => {
+          if (part.type !== 'literal') {
+            values[part.type] = part.value;
+          }
+        });
+        return {
+          year: Number(values.year),
+          month: Number(values.month),
+          day: Number(values.day),
+          hour: Number(values.hour),
+          minute: Number(values.minute),
+          second: Number(values.second)
+        };
+      }
+
+      function getCurrentKyivDayName() {
+        const { year, month, day } = getKyivParts();
+        const utcDate = Date.UTC(year, month - 1, day);
+        const jsDate = new Date(utcDate);
+        return dayNames[(jsDate.getUTCDay() + 6) % 7] || 'Понеділок';
+      }
+
+      function getKyivMinutesNow() {
+        const { hour, minute } = getKyivParts();
+        return hour * 60 + minute;
+      }
+
+      function isWeekendNow() {
+        return !dayNames.includes(getCurrentKyivDayName());
+      }
+
+      function getTimeMinutes(value) {
+        const [hours, minutes] = value.split(':').map(Number);
+        return hours * 60 + minutes;
+      }
+
+      function formatEndTime(startTime) {
+        const endMinutes = getTimeMinutes(startTime) + lessonDuration;
+        const hours = Math.floor(endMinutes / 60);
+        const minutes = endMinutes % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      }
+
+      function saveSelectedDay() {
+        localStorage.setItem(STORAGE_KEYS.selectedDay, selectedDay);
+      }
+
+      function loadSelectedDay() {
+        const savedDay = localStorage.getItem(STORAGE_KEYS.selectedDay);
+        if (savedDay && dayNames.includes(savedDay)) {
+          selectedDay = savedDay;
+        }
+      }
+
+      function updateAdminUI() {
+        document.getElementById('adminPanel').classList.toggle('hidden', !isAdmin);
+      }
+
+      function showSecretPopup() {
+        document.getElementById('secretPopup').classList.remove('hidden');
+        document.getElementById('secretInput').value = '';
+        setTimeout(() => document.getElementById('secretInput').focus(), 50);
+      }
+
+      function hideSecretPopup() {
+        document.getElementById('secretPopup').classList.add('hidden');
+      }
+
+      function activateAdminMode() {
+        isAdmin = true;
+        localStorage.setItem(STORAGE_KEYS.adminMode, '1');
+        updateAdminUI();
+        hideSecretPopup();
+      }
+
+      function deactivateAdminMode() {
+        isAdmin = false;
+        localStorage.setItem(STORAGE_KEYS.adminMode, '0');
+        updateAdminUI();
+      }
+
+      function handleSecretCommand(command) {
+        const normalized = String(command || '').trim().toLowerCase();
+        if (normalized === 'auth\\yono' || normalized === 'auth/yono') {
+          activateAdminMode();
+          return;
+        }
+        if (normalized.length) {
+          alert('Невірна команда. Введіть auth\\yono');
+        }
+      }
+
+      function renderDayButtons() {
+        const daySwitcher = document.getElementById('daySwitcher');
+        daySwitcher.innerHTML = '';
+
+        if (isWeekendNow()) {
+          daySwitcher.style.display = 'none';
+          return;
+        }
+
+        daySwitcher.style.display = 'flex';
+
+        dayNames.forEach((day) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `day-btn ${selectedDay === day ? 'active' : ''}`;
+          btn.textContent = day;
+          btn.addEventListener('click', () => {
+            selectedDay = day;
+            saveSelectedDay();
+            refreshViews();
+          });
+          daySwitcher.appendChild(btn);
+        });
+      }
+
+      function renderSubjects() {
+        const subjectGrid = document.getElementById('subjectGrid');
+        if (isWeekendNow()) {
+          subjectGrid.innerHTML = '<div class="empty-state">Сьогодні вихідний, відпочивай..</div>';
+          return;
+        }
+
+        const lessons = siteState.schedule[selectedDay] || [];
+        const nowMinutes = getKyivMinutesNow();
+        subjectGrid.innerHTML = '';
+
+        lessons.forEach((lesson) => {
+            const endMinutes = getTimeMinutes(lesson.time) + lessonDuration;
+            const link = document.createElement('a');
+            link.className = 'subject-btn';
+            // If we have a specific Meet link for this subject, attach it.
+            const meetUrl = subjectMeetMap[lesson.subject];
+            if (meetUrl) {
+              link.href = meetUrl;
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+              link.addEventListener('click', (event) => {
+                event.preventDefault();
+                window.open(meetUrl, '_blank', 'noopener,noreferrer');
+              });
+            } else {
+              // No specific link: make it non-clickable (keep styling)
+              link.href = 'javascript:void(0)';
+              link.addEventListener('click', (event) => {
+                event.preventDefault();
+              });
+            }
+
+          if (endMinutes <= nowMinutes) {
+            link.classList.add('past');
+          }
+
+          const badge = document.createElement('span');
+          badge.className = 'subject-number';
+          badge.textContent = lesson.number;
+
+          const label = document.createElement('span');
+          label.textContent = lesson.subject;
+
+          link.appendChild(badge);
+          link.appendChild(label);
+          subjectGrid.appendChild(link);
+        });
+      }
+
+      function renderBooks() {
+        const bookGrid = document.getElementById('bookGrid');
+        bookGrid.innerHTML = '';
+
+        // Show a single vertical list of all subjects (no day selection)
+        const subjects = Object.keys(subjectPdfMap || defaultPdfMap || {});
+        if (!subjects.length) {
+          bookGrid.innerHTML = '<div class="empty-state">Підручники відсутні.</div>';
+          return;
+        }
+
+        subjects.forEach((subject) => {
+          const btn = document.createElement('a');
+          btn.className = 'book-btn';
+          btn.style.display = 'flex';
+          btn.style.alignItems = 'center';
+          btn.style.justifyContent = 'flex-start';
+          btn.style.padding = '10px 12px';
+          btn.style.width = '100%';
+          const pdfUrl = (subjectPdfMap && subjectPdfMap[subject]) || (defaultPdfMap && defaultPdfMap[subject]) || '';
+          if (pdfUrl) {
+            btn.href = pdfUrl;
+            btn.target = '_blank';
+            btn.rel = 'noopener noreferrer';
+            btn.addEventListener('click', (e) => {
+              e.preventDefault();
+              window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+            });
+          } else {
+            btn.href = 'javascript:void(0)';
+            btn.classList.add('disabled');
+            btn.addEventListener('click', (e) => e.preventDefault());
+          }
+
+          const label = document.createElement('div');
+          label.textContent = subject;
+          label.style.fontSize = '1rem';
+          label.style.marginLeft = '6px';
+
+          btn.appendChild(label);
+          bookGrid.appendChild(btn);
+        });
+      }
+
+      function renderSchedule() {
+        const scheduleBody = document.getElementById('scheduleBody');
+        const scheduleTitle = document.getElementById('scheduleTitle');
+
+        if (isWeekendNow()) {
+          scheduleTitle.textContent = 'Розклад';
+          scheduleBody.innerHTML = '';
+          return;
+        }
+
+        const lessons = siteState.schedule[selectedDay] || [];
+        scheduleTitle.textContent = `Розклад · ${selectedDay}`;
+        scheduleBody.innerHTML = '';
+
+        lessons.forEach((lesson) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${lesson.number}</td>
+            <td>${lesson.time} - ${formatEndTime(lesson.time)}</td>
+            <td>${lesson.subject}</td>
+          `;
+          scheduleBody.appendChild(row);
+        });
+      }
+
+      function updateTodayCard() {
+        const todayLabel = document.getElementById('todayLabel');
+        const nextLessonLabel = document.getElementById('nextLessonLabel');
+        const todayName = getCurrentKyivDayName();
+
+        if (isWeekendNow()) {
+          todayLabel.textContent = 'Вихідний';
+          nextLessonLabel.textContent = '☕ Відпочивай';
+          return;
+        }
+
+        todayLabel.textContent = todayName;
+        const lessons = siteState.schedule[selectedDay] || [];
+        const nowMinutes = getKyivMinutesNow();
+
+        const activeLesson = lessons.find((lesson) => {
+          const start = getTimeMinutes(lesson.time);
+          const end = start + lessonDuration;
+          return start <= nowMinutes && nowMinutes < end;
+        });
+
+        if (activeLesson) {
+          nextLessonLabel.textContent = `🕒 ${activeLesson.subject} ${activeLesson.time} - ${formatEndTime(activeLesson.time)}`;
+          return;
+        }
+
+        const nextLesson = lessons.find((lesson) => nowMinutes < getTimeMinutes(lesson.time));
+        if (nextLesson) {
+          nextLessonLabel.textContent = `🕒 ${nextLesson.subject} ${nextLesson.time}`;
+          return;
+        }
+
+        nextLessonLabel.textContent = '✕ Немає уроків';
+      }
+
+      function refreshViews() {
+        saveSelectedDay();
+        document.querySelector('.title').textContent = siteState.pageTitle;
+        document.querySelector('.subtitle').textContent = siteState.subtitle;
+        document.title = siteState.pageTitle;
+        renderDayButtons();
+        renderSubjects();
+        renderBooks();
+        renderSchedule();
+        updateTodayCard();
+        // Keep day switcher hidden when Books panel is active (prevents Firebase updates from showing it)
+        const daySwitcher = document.getElementById('daySwitcher');
+        const activePanel = document.querySelector('.panel.active');
+        if (daySwitcher) {
+          daySwitcher.style.display = (activePanel && activePanel.id === 'books-panel') ? 'none' : '';
+        }
+      }
+
+      function fillAdminForm() {
+        document.getElementById('adminTitleInput').value = siteState.pageTitle;
+        document.getElementById('adminSubtitleInput').value = siteState.subtitle;
+        document.getElementById('adminScheduleInput').value = JSON.stringify(siteState.schedule, null, 2);
+        document.getElementById('adminPdfInput').value = JSON.stringify(siteState.pdfs || subjectPdfMap, null, 2);
+      }
+
+      async function saveAdminChanges() {
+        let schedule;
+        let pdfs;
+        try {
+          schedule = JSON.parse(document.getElementById('adminScheduleInput').value);
+          try {
+            pdfs = JSON.parse(document.getElementById('adminPdfInput').value || '{}');
+          } catch (e) {
+            alert('Невірний JSON для підручників.');
+            return;
+          }
+        } catch (error) {
+          alert('Невірний JSON. Перевірте розклад.');
+          return;
+        }
+
+        const nextState = {
+          pageTitle: document.getElementById('adminTitleInput').value.trim() || 'Outland',
+          subtitle: document.getElementById('adminSubtitleInput').value.trim() || '9-Г',
+          schedule,
+          pdfs: pdfs || {},
+          updatedAt: Date.now()
+        };
+
+        siteState = nextState;
+        await set(ref(db, 'site/content'), nextState);
+      }
+
+      async function resetAdminChanges() {
+        siteState = {
+          pageTitle: 'Outland',
+          subtitle: '9-Г',
+          schedule: clone(defaultSchedule),
+          pdfs: JSON.parse(JSON.stringify(defaultPdfMap)),
+          updatedAt: Date.now()
+        };
+        await set(ref(db, 'site/content'), siteState);
+      }
+
+      function updateDeviceList(devices) {
+        const list = document.getElementById('deviceList');
+        list.innerHTML = '';
+
+        if (!devices || !Object.keys(devices).length) {
+          list.innerHTML = '<li>Немає активних пристроїв</li>';
+          return;
+        }
+
+        const activeDevices = Object.values(devices)
+          .filter((device) => device && device.lastSeen && Date.now() - device.lastSeen < 45000)
+          .sort((a, b) => b.lastSeen - a.lastSeen);
+
+        if (!activeDevices.length) {
+          list.innerHTML = '<li>Немає активних пристроїв</li>';
+          return;
+        }
+
+        activeDevices.forEach((device) => {
+          const item = document.createElement('li');
+          const label = device.label || device.userAgent || 'браузер';
+          const time = new Date(device.lastSeen).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+          item.textContent = `${label} • ${time}`;
+          list.appendChild(item);
+        });
+      }
+
+      function startPresence() {
+        const clientId = crypto.randomUUID ? crypto.randomUUID() : `device-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        const presenceRef = ref(db, `presence/${clientId}`);
+        const payload = {
+          label: navigator.platform || 'browser',
+          userAgent: navigator.userAgent,
+          lastSeen: Date.now()
+        };
+
+        set(presenceRef, payload);
+        onDisconnect(presenceRef).remove();
+
+        const heartbeat = setInterval(() => {
+          set(presenceRef, { ...payload, lastSeen: Date.now() });
+        }, 20000);
+
+        window.addEventListener('beforeunload', () => {
+          clearInterval(heartbeat);
+          remove(presenceRef);
+        });
+      }
+
+      function bindEvents() {
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const target = tab.dataset.target;
+            if (target) {
+              tabs.forEach((item) => item.classList.toggle('active', item === tab));
+              panels.forEach((panel) => panel.classList.toggle('active', panel.id === target));
+              const daySwitcher = document.getElementById('daySwitcher');
+              if (daySwitcher) {
+                daySwitcher.style.display = (target === 'books-panel') ? 'none' : '';
+              }
+            }
+          });
+        });
+
+        // Settings
+        document.getElementById('settingsBtn').addEventListener('click', openSettings);
+        document.getElementById('closeSettings').addEventListener('click', closeSettings);
+
+        document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+
+        document.querySelectorAll('.color-option').forEach(el => {
+          el.addEventListener('click', () => setAccentColor(el.dataset.color));
+        });
+
+        // Close settings when clicking outside
+        document.addEventListener('click', (e) => {
+          const settingsPanel = document.getElementById('settingsPanel');
+          const settingsBtn = document.getElementById('settingsBtn');
+          if (!settingsPanel.contains(e.target) && !settingsBtn.contains(e.target) && settingsPanel.classList.contains('show')) {
+            closeSettings();
+          }
+        });
+
+        document.getElementById('secretCancel').addEventListener('click', hideSecretPopup);
+        document.getElementById('secretSubmit').addEventListener('click', () => {
+          handleSecretCommand(document.getElementById('secretInput').value);
+        });
+        document.getElementById('secretInput').addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') handleSecretCommand(event.target.value);
+        });
+
+        document.getElementById('closeAdminPanel').addEventListener('click', deactivateAdminMode);
+        document.getElementById('saveAdminData').addEventListener('click', saveAdminChanges);
+        document.getElementById('resetAdminData').addEventListener('click', resetAdminChanges);
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'ё' || event.key === '`' || event.key === '~') {
+            event.preventDefault();
+            showSecretPopup();
+          }
+        });
+      }
+
+      async function initDatabase() {
+        try {
+          const contentRef = ref(db, 'site/content');
+          const snapshot = await get(contentRef);
+
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            // Автоматично оновлюємо старе значення на нове
+            const subtitle = data.subtitle && data.subtitle.includes('10 школа') ? '9-Г' : (data.subtitle || '9-Г');
+            siteState = {
+              pageTitle: data.pageTitle || 'Outland',
+              subtitle: subtitle,
+              schedule: data.schedule && Object.keys(data.schedule).length ? data.schedule : clone(defaultSchedule),
+              pdfs: data.pdfs || JSON.parse(JSON.stringify(defaultPdfMap))
+            };
+            // Ensure Wednesday uses the strict 7-lesson order requested by the user
+            if (!siteState.schedule) siteState.schedule = clone(defaultSchedule);
+            siteState.schedule['Середа'] = clone(defaultSchedule['Середа']);
+            // Ensure subject PDF map is up to date: merge defaults with DB values and persist merged map
+            const mergedPdfs = Object.assign({}, JSON.parse(JSON.stringify(defaultPdfMap)), siteState.pdfs || {});
+            siteState.pdfs = mergedPdfs;
+            subjectPdfMap = mergedPdfs;
+            await set(contentRef, siteState);
+          } else {
+            await set(contentRef, siteState);
+          }
+
+          onValue(contentRef, (snapshotValue) => {
+            if (!snapshotValue.exists()) return;
+            const data = snapshotValue.val();
+            siteState = {
+              pageTitle: data.pageTitle || 'Outland',
+              subtitle: data.subtitle || '9-Г',
+              schedule: data.schedule && Object.keys(data.schedule).length ? data.schedule : clone(defaultSchedule),
+              pdfs: data.pdfs || JSON.parse(JSON.stringify(defaultPdfMap))
+            };
+            // Force Wednesday to the requested 7-lesson order
+            if (!siteState.schedule) siteState.schedule = clone(defaultSchedule);
+            siteState.schedule['Середа'] = clone(defaultSchedule['Середа']);
+            // Apply PDFs from DB, merged with defaults so new subjects show
+            const merged = Object.assign({}, JSON.parse(JSON.stringify(defaultPdfMap)), siteState.pdfs || {});
+            siteState.pdfs = merged;
+            subjectPdfMap = merged;
+            fillAdminForm();
+            refreshViews();
+          });
+
+          const presenceRef = ref(db, 'presence');
+          onValue(presenceRef, (snapshotValue) => {
+            updateDeviceList(snapshotValue.val() || {});
+          });
+        } catch (error) {
+          console.error('Firebase init failed', error);
+        }
+      }
+
+      loadSelectedDay();
+      bindEvents();
+      updateAdminUI();
+      applySettings();
+      updateSettingsUI();
+      fillAdminForm();
+      checkDesktopMode();
+      initDatabase();
+      startPresence();
+      refreshViews();
+      setInterval(refreshViews, 30000);
+    </script>
+  </body>
+</html>
