@@ -1561,26 +1561,139 @@ body.font-size-large {
 }
 
 @media (max-width: 800px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px 12px 40px;
+  }
+
   .topbar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 16px;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+  }
+
+  .brand {
+    min-width: 0;
+    gap: 12px;
+  }
+
+  .logo-wrap {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+  }
+
+  .sputnik-svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .title-block {
+    min-width: 0;
+  }
+
+  .title {
+    font-size: clamp(2rem, 11vw, 3rem);
+    overflow-wrap: anywhere;
   }
 
   .tabs {
     width: 100%;
-    justify-content: center;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 14px;
+  }
+
+  .tab {
+    min-width: 0;
+    padding: 10px 6px;
+    font-size: clamp(0.72rem, 2.7vw, 0.95rem);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .settings-btn {
+    width: 42px;
+    height: 42px;
+    margin-left: 0;
   }
 
   .utility-bar {
     grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 14px 0 20px;
+  }
+
+  .info-card {
+    min-width: 0;
+    padding: 14px 16px;
+  }
+
+  .info-value {
+    min-width: 0;
+    font-size: clamp(1rem, 4.5vw, 1.35rem);
+    overflow-wrap: anywhere;
+  }
+
+  .daily-notice {
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+
+  .daily-notice__content {
+    min-width: 0;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+  }
+
+  .day-switcher {
+    gap: 7px;
+    margin: 12px 0 18px;
+  }
+
+  .day-btn {
+    min-width: 0;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
   }
 
   .subject-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .subject-btn {
     min-height: 120px;
+    width: 100%;
+    padding: 24px 14px 18px;
+    font-size: clamp(1rem, 5vw, 1.45rem);
+    overflow-wrap: anywhere;
+  }
+
+  .book-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .book-btn {
+    min-width: 0;
+    min-height: 84px;
+    padding: 10px 8px;
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
   }
 
   .schedule-wrap {
@@ -1589,13 +1702,42 @@ body.font-size-large {
   }
 
   table {
-    min-width: 100%;
-    table-layout: fixed;
+    min-width: 520px;
   }
 
   thead th,
   tbody td {
     padding: 10px 8px;
     font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .settings-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 38px;
+  }
+
+  .settings-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .book-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .book-btn {
+    min-height: 64px;
   }
 }
