@@ -301,16 +301,19 @@
         '1 група': 'https://meet.google.com/vze-fugv-wkr?authuser=6&hs=179',
         '2 група': 'https://meet.google.com/uyq-czck-bot'
       };
+      const clickSound = new Audio('sounds/clicksound.wav');
+      const lessonSound = new Audio('sounds/soundlesson.mp3');
+      clickSound.volume = 0.2;
+      lessonSound.volume = 1;
+      let lessonSoundKey = '';
       const defaultPdfMap = {
-        'Англійська': 'https://drive.google.com/drive/folders/1Ucg3sUlUi2yHYO7eAKmJzi72rYvPlfuv?usp=sharing',
+        'Англійська мова': 'https://drive.google.com/drive/folders/1Ucg3sUlUi2yHYO7eAKmJzi72rYvPlfuv?usp=sharing',
         'Українська мова': 'books/ukrmova.pdf',
-        'Українська література': '',
         'Всесвітня історія': 'books/vsesvitnyaistoriya.pdf',
         'Інформатика': 'books/informatika.pdf',
         'Географія': 'books/geografiya.pdf',
         'Фізика': 'books/fizika.pdf',
         'Хімія': 'books/himiya.pdf',
-        'Біологія': '',
         'Історія України': 'books/istoriyaukraine.pdf',
         'Алгебра': 'books/algebra.pdf',
         'Геометрія': 'books/geometriya.pdf',
@@ -318,7 +321,8 @@
         'Німецька мова': 'books/nemeckiy.pdf',
         'Правознавство': 'books/pravoznavstvo.pdf',
         'Громадянська освіта': 'books/gromadyanskaosvita.pdf',
-        'Фінансова грамотність': 'books/finansovagramotnist.pdf'
+        'Фінансова грамотність': 'books/finansovagramotnist.pdf',
+        "Здоров'я, безпека та добробут": 'books/Zdorovya_bezpeka_ta_dobrobut.pdf'
       };
       let subjectPdfMap = JSON.parse(JSON.stringify(defaultPdfMap));
       const lessonDuration = 30;
@@ -346,7 +350,7 @@
       } catch(e) {}
 
       function normalizePdfMap(rawMap = {}) {
-        const merged = Object.assign({}, JSON.parse(JSON.stringify(defaultPdfMap)), rawMap || {});
+        const merged = JSON.parse(JSON.stringify(defaultPdfMap));
         for (const key of blockedPdfKeys) {
           delete merged[key];
         }
@@ -414,7 +418,7 @@
 
       const defaultSchedule = {
         'Понеділок': [
-          { number: 1, time: '08:00', subject: 'Англійська' },
+          { number: 1, time: '08:00', subject: 'Англійська мова' },
           { number: 2, time: '08:40', subject: 'Алгебра' },
           { number: 3, time: '09:20', subject: 'Українська мова' },
           { number: 4, time: '10:00', subject: 'Українська література' },
@@ -433,7 +437,7 @@
           { number: 8, time: '13:00', subject: 'Фінансова грамотність' }
         ],
         'Середа': [
-          { number: 1, time: '08:00', subject: 'Англійська' },
+          { number: 1, time: '08:00', subject: 'Англійська мова' },
           { number: 2, time: '08:40', subject: 'Алгебра' },
           { number: 3, time: '09:20', subject: 'Українська мова' },
           { number: 4, time: '10:00', subject: 'Українська література' },
@@ -660,6 +664,32 @@
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
       }
 
+      function playClickSound() {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(() => {});
+      }
+
+      function playLessonReminder() {
+        lessonSound.currentTime = 0;
+        lessonSound.play().catch(() => {});
+      }
+
+      function checkLessonReminder() {
+        if (isWeekendNow()) return;
+
+        const lessons = siteState.schedule[selectedDay] || [];
+        const nowMinutes = getKyivMinutesNow();
+        const nextLesson = lessons.find((lesson) => nowMinutes < getTimeMinutes(lesson.time));
+        if (!nextLesson) return;
+
+        const minutesUntilLesson = getTimeMinutes(nextLesson.time) - nowMinutes;
+        const currentKey = `${selectedDay}-${nextLesson.number}-${nextLesson.time}`;
+        if (minutesUntilLesson <= 2 && minutesUntilLesson >= 0 && lessonSoundKey !== currentKey) {
+          lessonSoundKey = currentKey;
+          playLessonReminder();
+        }
+      }
+
       function saveSelectedDay() {
         localStorage.setItem(STORAGE_KEYS.selectedDay, selectedDay);
       }
@@ -730,13 +760,6 @@
       function renderDailyNotice() {
         const bar = document.getElementById('dailyNoticeBar');
         if (!bar) return;
-
-        const activePanel = document.querySelector('.panel.active');
-        if (activePanel && activePanel.id === 'subjects-panel') {
-          bar.classList.add('hidden');
-          bar.innerHTML = '';
-          return;
-        }
 
         const entries = getNoticeEntriesForDay(selectedDay);
         if (!entries.length) {
@@ -1365,6 +1388,12 @@
         document.getElementById('settingsBtn').addEventListener('click', openSettings);
         document.getElementById('closeSettings').addEventListener('click', closeSettings);
 
+        document.addEventListener('click', (event) => {
+          if (event.target.closest('button')) {
+            playClickSound();
+          }
+        });
+
         document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
 
         document.querySelectorAll('.color-option').forEach(el => {
@@ -1561,7 +1590,10 @@
       initDatabase();
       startPresence();
       refreshViews();
-      setInterval(refreshViews, 1000);
+      setInterval(() => {
+        refreshViews();
+        checkLessonReminder();
+      }, 1000);
 
       window.addEventListener('load', () => {
         setTimeout(() => {
