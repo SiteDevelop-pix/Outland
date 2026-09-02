@@ -56,6 +56,8 @@
         </div>
       </div>
 
+      <div id="dailyNoticeBar" class="daily-notice hidden" aria-live="polite"></div>
+
       <div class="day-switcher" id="daySwitcher" aria-label="Перемикання днів"></div>
 
       <main>
@@ -91,45 +93,94 @@
     </div>
 
     <div id="secretPopup" class="secret-popup hidden" aria-hidden="true">
-      <div class="secret-box">
-        <h2 class="secret-title">Секретна команда</h2>
-        <input id="secretInput" class="secret-input" type="text" placeholder="inject command" autocomplete="off" />
-        <div class="secret-actions">
-          <button class="ghost-btn" id="secretCancel" type="button">Закрити</button>
-          <button class="primary-btn" id="secretSubmit" type="button">Ввести</button>
+      <div class="secret-box" role="dialog" aria-modal="true" aria-label="Консоль доступу">
+        <div class="console-header">
+          <div class="console-dots" aria-hidden="true">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="console-title">C:\WINDOWS\system32\</div>
+          <div class="console-actions">
+            <button class="console-action" type="button" aria-label="Свернуть">—</button>
+            <button class="console-action" type="button" aria-label="Развернуть">□</button>
+            <button class="console-action console-action-close" type="button" aria-label="Закрыть">×</button>
+          </div>
+        </div>
+        <div class="console-body">
+          <div class="console-line console-prompt">C:\Users\Admin&gt; <span id="consoleGhostText">_</span></div>
+          <div class="console-input-wrap">
+            <span class="console-prefix">C:\Users\Admin&gt;</span>
+            <input id="secretInput" class="secret-input" type="text" autocomplete="off" spellcheck="false" aria-label="Команда" />
+          </div>
+          <div class="secret-actions">
+            <button class="ghost-btn" id="secretCancel" type="button">Закрити</button>
+            <button class="primary-btn" id="secretSubmit" type="button">Ввести</button>
+          </div>
         </div>
       </div>
     </div>
 
     <aside id="adminPanel" class="admin-panel hidden" aria-label="Адмін-панель">
-      <div class="admin-panel-header">
-        <h3>Адмін-панель</h3>
-        <button class="ghost-btn" id="closeAdminPanel" type="button">Вихід</button>
+      <div class="console-header admin-console-header">
+        <div class="console-dots" aria-hidden="true">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="console-title">admin / config</div>
+        <div class="console-actions">
+          <button class="console-action console-action-close" id="closeAdminPanel" type="button" aria-label="Закрити">×</button>
+        </div>
       </div>
-      <div class="admin-grid">
-        <label>
-          Назва сайту
-          <input id="adminTitleInput" type="text" />
-        </label>
-        <label>
-          Підзаголовок
-          <input id="adminSubtitleInput" type="text" />
-        </label>
-        <label class="full-width">
-          Розклад JSON
-          <textarea id="adminScheduleInput" rows="14"></textarea>
-        </label>
-        <label class="full-width">
-          Підручники JSON
-          <textarea id="adminPdfInput" rows="8" placeholder='{"Англійська":"https://...pdf"}'></textarea>
-        </label>
+
+      <div class="admin-console-body">
+        <div class="admin-grid compact-grid">
+          <label>
+            title
+            <input id="adminTitleInput" type="text" />
+          </label>
+          <label>
+            subtitle
+            <input id="adminSubtitleInput" type="text" />
+          </label>
+          <label class="full-width">
+            schedule
+            <textarea id="adminScheduleInput" rows="10"></textarea>
+          </label>
+          <label class="full-width">
+            books
+            <textarea id="adminPdfInput" rows="6" placeholder='{"Англійська":"https://...pdf"}'></textarea>
+          </label>
+        </div>
+
+        <div class="admin-actions compact-actions">
+          <button class="primary-btn" id="saveAdminData" type="button">save</button>
+          <button class="danger-btn" id="resetAdminData" type="button">reset</button>
+        </div>
+
+        <div class="notice-editor compact-notice">
+          <div class="notice-row">
+            <label>
+              day
+              <select id="noticeDaySelect"></select>
+            </label>
+          </div>
+          <label class="full-width">
+            note
+            <textarea id="noticeTextInput" rows="3" placeholder="Увага! ..."></textarea>
+          </label>
+          <div class="notice-actions compact-actions">
+            <button class="primary-btn" id="saveNoticeBtn" type="button">set</button>
+            <button class="ghost-btn" id="clearNoticeBtn" type="button">clear</button>
+          </div>
+        </div>
+
+        <div class="device-box">
+          <div class="device-header">online</div>
+          <ul id="deviceList" class="device-list"></ul>
+        </div>
       </div>
-      <div class="admin-actions">
-        <button class="primary-btn" id="saveAdminData" type="button">Зберегти</button>
-        <button class="danger-btn" id="resetAdminData" type="button">Скинути на стандарт</button>
-      </div>
-      <h4>Пристрої онлайн</h4>
-      <ul id="deviceList" class="device-list"></ul>
     </aside>
 
     <div id="settingsPanel" class="settings-panel">
@@ -216,11 +267,10 @@
       };
       const defaultPdfMap = {
         'Англійська': 'https://drive.google.com/drive/folders/1Ucg3sUlUi2yHYO7eAKmJzi72rYvPlfuv?usp=sharing',
-        'Математика': '',
         'Українська мова': 'ukrmova.pdf',
         'Українська література': '',
         'Всесвітня історія': 'vsesvitnyaistoriya.pdf',
-        'Інформатика': '',
+        'Інформатика': 'informatika.pdf',
         'Географія': 'geografiya.pdf',
         'Фізика': 'fizika.pdf',
         'Хімія': 'himiya.pdf',
@@ -236,6 +286,7 @@
       };
       let subjectPdfMap = JSON.parse(JSON.stringify(defaultPdfMap));
       const lessonDuration = 30;
+      const blockedPdfKeys = new Set(['Математика', 'Захист вітчизни']);
       const STORAGE_KEYS = {
         selectedDay: 'outland.selectedDay',
         adminMode: 'outland.adminMode',
@@ -243,6 +294,14 @@
         accentColor: 'outland.accentColor',
         language: 'outland.language'
       };
+
+      function normalizePdfMap(rawMap = {}) {
+        const merged = Object.assign({}, JSON.parse(JSON.stringify(defaultPdfMap)), rawMap || {});
+        for (const key of blockedPdfKeys) {
+          delete merged[key];
+        }
+        return merged;
+      }
 
       const translations = {
         uk: {
@@ -267,7 +326,7 @@
           weekend: 'Вихідний',
           rest: '☕ Відпочивай',
           noLessons: '✕ Немає уроків',
-          invalidCommand: 'Невірна команда. Введіть auth\\yono',
+          invalidCommand: 'Невірна команда.',
           invalidJSON: 'Невірний JSON. Перевірте розклад.',
           noActiveDevices: 'Немає активних пристроїв',
           onlineDevices: 'Пристрої онлайн',
@@ -295,7 +354,7 @@
           weekend: 'Выходной',
           rest: '☕ Отдыхай',
           noLessons: '✕ Нет уроков',
-          invalidCommand: 'Неверная команда. Введите auth\\yono',
+          invalidCommand: 'Отказано в доступе.',
           invalidJSON: 'Неверный JSON. Проверьте расписание.',
           noActiveDevices: 'Нет активных устройств',
           onlineDevices: 'Устройства онлайн',
@@ -305,55 +364,57 @@
 
       const defaultSchedule = {
         'Понеділок': [
-          { number: 1, time: '08:30', subject: 'Англійська' },
-          { number: 2, time: '09:10', subject: 'Алгебра' },
-          { number: 3, time: '09:50', subject: 'Українська мова' },
-          { number: 4, time: '10:30', subject: 'Українська література' },
-          { number: 5, time: '11:10', subject: 'Всесвітня історія' },
-          { number: 6, time: '11:50', subject: 'Інформатика' },
-          { number: 7, time: '12:50', subject: 'Географія' }
+          { number: 1, time: '08:00', subject: 'Англійська' },
+          { number: 2, time: '08:40', subject: 'Алгебра' },
+          { number: 3, time: '09:20', subject: 'Українська мова' },
+          { number: 4, time: '10:00', subject: 'Українська література' },
+          { number: 5, time: '10:40', subject: 'Всесвітня історія' },
+          { number: 6, time: '11:20', subject: 'Інформатика' },
+          { number: 7, time: '12:20', subject: 'Географія' }
         ],
         'Вівторок': [
-          { number: 1, time: '08:30', subject: 'Геометрія' },
-          { number: 2, time: '09:10', subject: 'Українська мова' },
-          { number: 3, time: '09:50', subject: 'Хімія' },
-          { number: 4, time: '10:30', subject: 'Зарубіжна література' },
-          { number: 5, time: '11:10', subject: 'Фізика' },
-          { number: 6, time: '11:50', subject: 'Англійська мова' },
-          { number: 7, time: '12:50', subject: 'Біологія' },
-          { number: 8, time: '13:30', subject: 'Фінансова грамотність' }
+          { number: 1, time: '08:00', subject: 'Геометрія' },
+          { number: 2, time: '08:40', subject: 'Українська мова' },
+          { number: 3, time: '09:20', subject: 'Хімія' },
+          { number: 4, time: '10:00', subject: 'Зарубіжна література' },
+          { number: 5, time: '10:40', subject: 'Фізика' },
+          { number: 6, time: '11:20', subject: 'Англійська мова' },
+          { number: 7, time: '12:20', subject: 'Біологія' },
+          { number: 8, time: '13:00', subject: 'Фінансова грамотність' }
         ],
         'Середа': [
-          { number: 1, time: '08:30', subject: 'Англійська' },
-          { number: 2, time: '09:10', subject: 'Алгебра' },
-          { number: 3, time: '09:50', subject: 'Українська мова' },
-          { number: 4, time: '10:30', subject: 'Українська література' },
-          { number: 5, time: '11:10', subject: 'Всесвітня історія' },
-          { number: 6, time: '11:50', subject: 'Інформатика' },
-          { number: 7, time: '12:50', subject: 'Географія' }
+          { number: 1, time: '08:00', subject: 'Англійська' },
+          { number: 2, time: '08:40', subject: 'Алгебра' },
+          { number: 3, time: '09:20', subject: 'Українська мова' },
+          { number: 4, time: '10:00', subject: 'Українська література' },
+          { number: 5, time: '10:40', subject: 'Всесвітня історія' },
+          { number: 6, time: '11:20', subject: 'Інформатика' },
+          { number: 7, time: '12:20', subject: 'Географія' }
         ],
         'Четвер': [
-          { number: 1, time: '08:30', subject: 'Українська мова' },
-          { number: 2, time: '09:10', subject: 'Громадянська освіта' },
-          { number: 3, time: '09:50', subject: 'Фізична культура' },
-          { number: 4, time: '10:30', subject: 'Українська література' },
-          { number: 5, time: '11:10', subject: 'Фізика' },
-          { number: 6, time: '11:50', subject: 'Німецька мова' },
-          { number: 7, time: '12:50', subject: 'Геометрія' }
+          { number: 1, time: '08:00', subject: 'Українська мова' },
+          { number: 2, time: '08:40', subject: 'Громадянська освіта' },
+          { number: 3, time: '09:20', subject: 'Фізична культура' },
+          { number: 4, time: '10:00', subject: 'Українська література' },
+          { number: 5, time: '10:40', subject: 'Фізика' },
+          { number: 6, time: '11:20', subject: 'Німецька мова' },
+          { number: 7, time: '12:20', subject: 'Геометрія' }
         ],
         "П'ятниця": [
-          { number: 1, time: '08:30', subject: 'Алгебра' },
-          { number: 2, time: '09:10', subject: 'Геометрія' },
-          { number: 3, time: '09:50', subject: 'Хімія' },
-          { number: 4, time: '10:30', subject: 'Історія України' },
-          { number: 5, time: '11:10', subject: 'Фізика' },
-          { number: 6, time: '11:50', subject: 'Біологія' },
-          { number: 7, time: '12:50', subject: 'Англійська мова' },
-          { number: 8, time: '13:30', subject: 'Українська мова' }
+          { number: 1, time: '08:00', subject: 'Алгебра' },
+          { number: 2, time: '08:40', subject: 'Геометрія' },
+          { number: 3, time: '09:20', subject: 'Хімія' },
+          { number: 4, time: '10:00', subject: 'Історія України' },
+          { number: 5, time: '10:40', subject: 'Фізика' },
+          { number: 6, time: '11:20', subject: 'Біологія' },
+          { number: 7, time: '12:20', subject: 'Англійська мова' },
+          { number: 8, time: '13:00', subject: 'Українська мова' }
         ]
       };
 
+      const defaultNoticeText = 'Увага! В цей день у розкладі уроків могли бути зміни. Перегляньте групу класа у Viber.';
       let selectedDay = 'Понеділок';
+      let dayNoticeMap = {};
       let isAdmin = localStorage.getItem(STORAGE_KEYS.adminMode) === '1';
       let siteState = {
         pageTitle: 'Outland',
@@ -561,6 +622,103 @@
 
       function updateAdminUI() {
         document.getElementById('adminPanel').classList.toggle('hidden', !isAdmin);
+        if (isAdmin) {
+          fillNoticeDaySelect();
+          const day = selectedDay || dayNames[0];
+          const notice = dayNoticeMap[day];
+          const textInput = document.getElementById('noticeTextInput');
+          if (textInput) {
+            textInput.value = notice && notice.text ? notice.text : defaultNoticeText;
+          }
+        }
+      }
+
+      function fillNoticeDaySelect() {
+        const selector = document.getElementById('noticeDaySelect');
+        if (!selector) return;
+        selector.innerHTML = '';
+        dayNames.forEach((day) => {
+          const option = document.createElement('option');
+          option.value = day;
+          option.textContent = day;
+          selector.appendChild(option);
+        });
+        selector.value = selectedDay || dayNames[0];
+      }
+
+      function renderDailyNotice() {
+        const bar = document.getElementById('dailyNoticeBar');
+        if (!bar) return;
+
+        const activeNotice = dayNoticeMap[selectedDay];
+        if (!activeNotice || !activeNotice.enabled || !activeNotice.text) {
+          bar.classList.add('hidden');
+          bar.innerHTML = '';
+          return;
+        }
+
+        bar.classList.remove('hidden');
+        bar.innerHTML = `
+          <div class="daily-notice__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.5a9.5 9.5 0 1 1 0 19 9.5 9.5 0 0 1 0-19Zm0 4.2a1.1 1.1 0 0 0-1.1 1.1v5.4a1.1 1.1 0 1 0 2.2 0V7.8A1.1 1.1 0 0 0 12 6.7Zm0 10.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="daily-notice__content">${activeNotice.text}</div>
+        `;
+      }
+
+      function persistNoticeMap() {
+        localStorage.setItem('outland.dayNoticeMap', JSON.stringify(dayNoticeMap || {}));
+        if (!db) return;
+        set(ref(db, 'site/notices'), dayNoticeMap).catch(() => {
+          // Firebase rules can block writes; keep local-only fallback for this browser.
+        });
+      }
+
+      function loadNoticeMapFromLocal() {
+        try {
+          const raw = localStorage.getItem('outland.dayNoticeMap');
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function saveNoticeForSelectedDay() {
+        const selector = document.getElementById('noticeDaySelect');
+        const textInput = document.getElementById('noticeTextInput');
+        if (!selector || !textInput) return;
+        const day = selector.value;
+        const text = (textInput.value || '').trim();
+        if (!day) return;
+
+        if (!text) {
+          delete dayNoticeMap[day];
+        } else {
+          dayNoticeMap[day] = { enabled: true, text };
+        }
+
+        persistNoticeMap();
+        renderDailyNotice();
+        if (selectedDay === day) {
+          refreshViews();
+        }
+      }
+
+      function clearNoticeForSelectedDay() {
+        const selector = document.getElementById('noticeDaySelect');
+        if (!selector) return;
+        const day = selector.value;
+        if (!day) return;
+        delete dayNoticeMap[day];
+        persistNoticeMap();
+        if (selectedDay === day) {
+          renderDailyNotice();
+          refreshViews();
+        }
       }
 
       function showSecretPopup() {
@@ -588,13 +746,18 @@
 
       function handleSecretCommand(command) {
         const normalized = String(command || '').trim().toLowerCase();
-        if (normalized === 'auth\\yono' || normalized === 'auth/yono') {
+        if (normalized === '30' || normalized === 'auth\\yono' || normalized === 'auth/yono') {
           activateAdminMode();
+          const selector = document.getElementById('noticeDaySelect');
+          if (selector) selector.value = selectedDay || dayNames[0];
+          const textInput = document.getElementById('noticeTextInput');
+          if (textInput) {
+            const notice = dayNoticeMap[selectedDay] || {};
+            textInput.value = notice.text || defaultNoticeText;
+          }
           return;
         }
-        if (normalized.length) {
-          alert('Невірна команда. Введіть auth\\yono');
-        }
+        hideSecretPopup();
       }
 
       function renderDayButtons() {
@@ -741,8 +904,8 @@
         const bookGrid = document.getElementById('bookGrid');
         bookGrid.innerHTML = '';
 
-        // Show a single vertical list of all subjects (no day selection)
-        const subjects = Object.keys(subjectPdfMap || defaultPdfMap || {});
+        const safePdfMap = normalizePdfMap(subjectPdfMap || defaultPdfMap || {});
+        const subjects = Object.keys(safePdfMap);
         if (!subjects.length) {
           bookGrid.innerHTML = '<div class="empty-state">Підручники відсутні.</div>';
           return;
@@ -855,6 +1018,7 @@
         document.querySelector('.subtitle').textContent = siteState.subtitle;
         document.title = siteState.pageTitle;
         renderDayButtons();
+        renderDailyNotice();
         renderSubjects();
         renderBooks();
         renderSchedule();
@@ -913,18 +1077,61 @@
         await set(ref(db, 'site/content'), siteState);
       }
 
+      function getDeviceId() {
+        const existing = localStorage.getItem('outland.deviceId');
+        if (existing) return existing;
+        const generated = crypto.randomUUID ? crypto.randomUUID() : `device-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        localStorage.setItem('outland.deviceId', generated);
+        return generated;
+      }
+
+      function getDeviceLabel() {
+        const platform = navigator.platform || 'browser';
+        const userAgent = navigator.userAgent || '';
+        const matches = [
+          { name: 'Windows', test: /Windows/i },
+          { name: 'Android', test: /Android/i },
+          { name: 'iPhone', test: /iPhone/i },
+          { name: 'iPad', test: /iPad/i },
+          { name: 'Mac', test: /Mac/i },
+          { name: 'Linux', test: /Linux/i }
+        ];
+        const match = matches.find((item) => item.test.test(userAgent));
+        const browser = /Chrome/i.test(userAgent) ? 'Chrome' : /Firefox/i.test(userAgent) ? 'Firefox' : /Safari/i.test(userAgent) ? 'Safari' : /Edge/i.test(userAgent) ? 'Edge' : 'Browser';
+        return `${match ? match.name : platform} / ${browser}`;
+      }
+
+      async function getPublicIp() {
+        try {
+          const response = await fetch('https://api.ipify.org?format=json');
+          const data = await response.json();
+          return data && data.ip ? data.ip : 'unknown';
+        } catch (error) {
+          return 'unknown';
+        }
+      }
+
       function updateDeviceList(devices) {
         const list = document.getElementById('deviceList');
         list.innerHTML = '';
 
-        if (!devices || !Object.keys(devices).length) {
-          list.innerHTML = '<li>Немає активних пристроїв</li>';
-          return;
-        }
+        const safeDevices = devices && typeof devices === 'object' ? devices : {};
+        const grouped = Object.values(safeDevices).reduce((acc, device) => {
+          if (!device || !device.lastSeen) return acc;
+          const key = (device.deviceId || device.label || device.userAgent || 'unknown').toString();
+          const current = acc.get(key);
+          if (!current || device.lastSeen > current.lastSeen) {
+            acc.set(key, {
+              ...device,
+              lastSeen: Number(device.lastSeen)
+            });
+          }
+          return acc;
+        }, new Map());
 
-        const activeDevices = Object.values(devices)
-          .filter((device) => device && device.lastSeen && Date.now() - device.lastSeen < 45000)
-          .sort((a, b) => b.lastSeen - a.lastSeen);
+        const activeDevices = Array.from(grouped.values())
+          .filter((device) => Date.now() - Number(device.lastSeen) < 45000)
+          .sort((a, b) => Number(b.lastSeen) - Number(a.lastSeen));
 
         if (!activeDevices.length) {
           list.innerHTML = '<li>Немає активних пристроїв</li>';
@@ -933,32 +1140,70 @@
 
         activeDevices.forEach((device) => {
           const item = document.createElement('li');
-          const label = device.label || device.userAgent || 'браузер';
-          const time = new Date(device.lastSeen).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
-          item.textContent = `${label} • ${time}`;
+          const label = device.label || device.deviceName || 'browser';
+          const ip = device.ip || 'unknown';
+          const lastSeen = new Date(device.lastSeen).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+          item.innerHTML = `<strong>${label}</strong><br><span>${ip}</span><br><small>${lastSeen}</small>`;
           list.appendChild(item);
         });
       }
 
       function startPresence() {
-        const clientId = crypto.randomUUID ? crypto.randomUUID() : `device-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-        const presenceRef = ref(db, `presence/${clientId}`);
+        const deviceId = getDeviceId();
+        const presenceRef = ref(db, `presence/${deviceId}`);
         const payload = {
-          label: navigator.platform || 'browser',
+          deviceId,
+          label: getDeviceLabel(),
+          deviceName: getDeviceLabel(),
           userAgent: navigator.userAgent,
+          ip: 'loading...',
           lastSeen: Date.now()
         };
 
-        set(presenceRef, payload);
-        onDisconnect(presenceRef).remove();
+        getPublicIp().then((ip) => {
+          const nextPayload = { ...payload, ip };
+          try {
+            set(presenceRef, nextPayload).catch(() => {});
+          } catch (error) {
+            // Ignore Firebase permission denials and continue in local-only mode.
+          }
+        }).catch(() => {
+          try {
+            set(presenceRef, payload).catch(() => {});
+          } catch (error) {
+            // Ignore Firebase permission denials and continue in local-only mode.
+          }
+        });
+
+        try {
+          onDisconnect(presenceRef).remove();
+        } catch (error) {
+          // Ignore Firebase permission denials and continue in local-only mode.
+        }
 
         const heartbeat = setInterval(() => {
-          set(presenceRef, { ...payload, lastSeen: Date.now() });
+          const nextPayload = {
+            deviceId,
+            label: getDeviceLabel(),
+            deviceName: getDeviceLabel(),
+            userAgent: navigator.userAgent,
+            ip: payload.ip === 'loading...' ? 'unknown' : payload.ip,
+            lastSeen: Date.now()
+          };
+          try {
+            set(presenceRef, nextPayload).catch(() => {});
+          } catch (error) {
+            // Ignore silent failures from restricted Firebase rules.
+          }
         }, 20000);
 
         window.addEventListener('beforeunload', () => {
           clearInterval(heartbeat);
-          remove(presenceRef);
+          try {
+            remove(presenceRef).catch(() => {});
+          } catch (error) {
+            // Ignore cleanup error.
+          }
         });
       }
 
@@ -997,16 +1242,69 @@
         });
 
         document.getElementById('secretCancel').addEventListener('click', hideSecretPopup);
+        document.querySelector('.console-action-close').addEventListener('click', hideSecretPopup);
         document.getElementById('secretSubmit').addEventListener('click', () => {
           handleSecretCommand(document.getElementById('secretInput').value);
         });
         document.getElementById('secretInput').addEventListener('keydown', (event) => {
           if (event.key === 'Enter') handleSecretCommand(event.target.value);
+          if (event.key === 'Escape') hideSecretPopup();
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && !document.getElementById('secretPopup').classList.contains('hidden')) {
+            hideSecretPopup();
+          }
+        });
+
+        const adminPanel = document.getElementById('adminPanel');
+        const adminHeader = document.querySelector('.admin-console-header');
+
+        let dragState = null;
+
+        adminHeader.addEventListener('pointerdown', (event) => {
+          if (event.target.closest('button')) return;
+          dragState = {
+            startX: event.clientX,
+            startY: event.clientY,
+            panelLeft: adminPanel.offsetLeft,
+            panelTop: adminPanel.offsetTop
+          };
+          adminPanel.classList.add('dragging');
+          adminHeader.setPointerCapture(event.pointerId);
+        });
+
+        adminHeader.addEventListener('pointermove', (event) => {
+          if (!dragState) return;
+          const dx = event.clientX - dragState.startX;
+          const dy = event.clientY - dragState.startY;
+          const nextLeft = Math.min(Math.max(16, dragState.panelLeft + dx), window.innerWidth - adminPanel.offsetWidth - 16);
+          const nextTop = Math.min(Math.max(16, dragState.panelTop + dy), window.innerHeight - adminPanel.offsetHeight - 16);
+          adminPanel.style.left = `${nextLeft}px`;
+          adminPanel.style.top = `${nextTop}px`;
+          adminPanel.style.right = 'auto';
+        });
+
+        adminHeader.addEventListener('pointerup', () => {
+          dragState = null;
+          adminPanel.classList.remove('dragging');
+        });
+
+        adminHeader.addEventListener('pointerleave', () => {
+          dragState = null;
+          adminPanel.classList.remove('dragging');
         });
 
         document.getElementById('closeAdminPanel').addEventListener('click', deactivateAdminMode);
         document.getElementById('saveAdminData').addEventListener('click', saveAdminChanges);
         document.getElementById('resetAdminData').addEventListener('click', resetAdminChanges);
+        document.getElementById('saveNoticeBtn').addEventListener('click', saveNoticeForSelectedDay);
+        document.getElementById('clearNoticeBtn').addEventListener('click', clearNoticeForSelectedDay);
+        document.getElementById('noticeDaySelect').addEventListener('change', (event) => {
+          const day = event.target.value;
+          const notice = dayNoticeMap[day];
+          document.getElementById('noticeTextInput').value = notice && notice.text ? notice.text : defaultNoticeText;
+        });
 
         document.addEventListener('keydown', (event) => {
           if (event.key === 'ё' || event.key === '`' || event.key === '~') {
@@ -1025,14 +1323,13 @@
             const data = snapshot.val();
             const subtitle = data.subtitle && data.subtitle.includes('10 школа') ? '9-Г' : (data.subtitle || '9-Г');
             const forcedSchedule = clone(defaultSchedule);
+            const mergedPdfs = normalizePdfMap(data.pdfs || {});
             siteState = {
               pageTitle: data.pageTitle || 'Outland',
               subtitle: subtitle,
               schedule: forcedSchedule,
-              pdfs: data.pdfs || JSON.parse(JSON.stringify(defaultPdfMap))
+              pdfs: mergedPdfs
             };
-            const mergedPdfs = Object.assign({}, JSON.parse(JSON.stringify(defaultPdfMap)), siteState.pdfs || {});
-            siteState.pdfs = mergedPdfs;
             subjectPdfMap = mergedPdfs;
             await set(contentRef, siteState);
           } else {
@@ -1043,22 +1340,41 @@
             if (!snapshotValue.exists()) return;
             const data = snapshotValue.val();
             const forcedSchedule = clone(defaultSchedule);
+            const merged = normalizePdfMap(data.pdfs || {});
             siteState = {
               pageTitle: data.pageTitle || 'Outland',
               subtitle: data.subtitle || '9-Г',
               schedule: forcedSchedule,
-              pdfs: data.pdfs || JSON.parse(JSON.stringify(defaultPdfMap))
+              pdfs: merged
             };
-            const merged = Object.assign({}, JSON.parse(JSON.stringify(defaultPdfMap)), siteState.pdfs || {});
-            siteState.pdfs = merged;
             subjectPdfMap = merged;
             fillAdminForm();
             refreshViews();
           });
 
+          const noticesRef = ref(db, 'site/notices');
+          onValue(noticesRef, (noticeSnapshot) => {
+            dayNoticeMap = noticeSnapshot.exists() ? noticeSnapshot.val() : loadNoticeMapFromLocal();
+            renderDailyNotice();
+            if (isAdmin) {
+              const selector = document.getElementById('noticeDaySelect');
+              if (selector) {
+                selector.value = selectedDay || dayNames[0];
+                const notice = dayNoticeMap[selectedDay] || {};
+                const input = document.getElementById('noticeTextInput');
+                if (input) input.value = notice.text || defaultNoticeText;
+              }
+            }
+          }, () => {
+            dayNoticeMap = loadNoticeMapFromLocal();
+            renderDailyNotice();
+          });
+
           const presenceRef = ref(db, 'presence');
           onValue(presenceRef, (snapshotValue) => {
             updateDeviceList(snapshotValue.val() || {});
+          }, () => {
+            updateDeviceList({});
           });
         } catch (error) {
           console.error('Firebase init failed', error);
