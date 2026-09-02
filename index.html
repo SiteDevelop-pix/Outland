@@ -3,14 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Outland</title>
+    <title>Sputnik</title>
     <link rel="stylesheet" href="styles.css" />
+    <noscript>
+      <style>
+        body {
+          background: #0d0d10;
+          color: #f5f5f5;
+        }
+        .page,
+        .settings-panel,
+        .secret-popup,
+        .admin-panel,
+        .desktop-mode-warning {
+          display: none !important;
+        }
+        body::before {
+          content: "Scripts are required to load this page.";
+          position: fixed;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          font-size: 1.2rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          background: #0d0d10;
+          color: #fff;
+          z-index: 99999;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
     <div id="splashScreen" class="splash-screen" aria-live="polite" aria-label="Завантаження сайту">
       <div class="splash-content">
-        <div class="splash-logo"><span>O</span></div>
-        <div class="splash-text">Outland</div>
+        <div class="splash-logo sputnik-logo splash-sputnik"><div class="sputnik-inner"><svg viewBox="0 0 48 48" class="sputnik-svg" xmlns="http://www.w3.org/2000/svg"><ellipse cx="24" cy="24" rx="18.5" ry="9.2" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" transform="rotate(-28 24 24)"/><circle cx="24" cy="24" r="8.2" fill="#111"/><text x="24" y="27.8" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="900" fill="#fff">S</text><circle cx="39.4" cy="18.0" r="3.1" fill="#111" stroke="#fff" stroke-width="1.1"/><circle cx="39.4" cy="18.0" r="0.95" fill="#fff"/></svg></div></div>
+        <div class="splash-text">Sputnik</div>
         <div class="splash-loader">
           <span></span>
           <span></span>
@@ -21,12 +50,24 @@
 
     <div class="page">
       <header class="topbar">
-        <div class="brand" aria-label="Логотип Outland">
-          <div class="logo-wrap">
-            <div class="logo-text">O</div>
+        <div class="brand" aria-label="Логотип Sputnik">
+          <div class="logo-wrap sputnik-logo" aria-hidden="true">
+            <div class="sputnik-inner">
+              <svg viewBox="0 0 48 48" class="sputnik-svg" xmlns="http://www.w3.org/2000/svg">
+                <!-- орбита -->
+                <ellipse cx="24" cy="24" rx="18.5" ry="9.2" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round" transform="rotate(-28 24 24)"/>
+                <!-- ядро-спутник -->
+                <circle cx="24" cy="24" r="8.2" fill="#111"/>
+                <!-- буква S -->
+                <text x="24" y="27.8" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="900" fill="#fff">S</text>
+                <!-- маленький спутник на орбите -->
+                <circle cx="39.4" cy="18.0" r="3.1" fill="#111" stroke="#fff" stroke-width="1.1"/>
+                <circle cx="39.4" cy="18.0" r="0.95" fill="#fff"/>
+              </svg>
+            </div>
           </div>
           <div class="title-block">
-            <div class="title">Outland</div>
+            <div class="title">Sputnik</div>
             <div class="subtitle">9-Г</div>
           </div>
         </div>
@@ -139,14 +180,6 @@
             subtitle
             <input id="adminSubtitleInput" type="text" />
           </label>
-          <label class="full-width">
-            schedule
-            <textarea id="adminScheduleInput" rows="10"></textarea>
-          </label>
-          <label class="full-width">
-            books
-            <textarea id="adminPdfInput" rows="6" placeholder='{"Англійська":"https://...pdf"}'></textarea>
-          </label>
         </div>
 
         <div class="admin-actions compact-actions">
@@ -159,6 +192,13 @@
             <label>
               day
               <select id="noticeDaySelect"></select>
+            </label>
+            <label>
+              type
+              <select id="noticeTypeSelect">
+                <option value="warning">warning</option>
+                <option value="admin">admin</option>
+              </select>
             </label>
           </div>
           <label class="full-width">
@@ -263,33 +303,47 @@
       };
       const defaultPdfMap = {
         'Англійська': 'https://drive.google.com/drive/folders/1Ucg3sUlUi2yHYO7eAKmJzi72rYvPlfuv?usp=sharing',
-        'Українська мова': 'ukrmova.pdf',
+        'Українська мова': 'books/ukrmova.pdf',
         'Українська література': '',
-        'Всесвітня історія': 'vsesvitnyaistoriya.pdf',
-        'Інформатика': 'informatika.pdf',
-        'Географія': 'geografiya.pdf',
-        'Фізика': 'fizika.pdf',
-        'Хімія': 'himiya.pdf',
+        'Всесвітня історія': 'books/vsesvitnyaistoriya.pdf',
+        'Інформатика': 'books/informatika.pdf',
+        'Географія': 'books/geografiya.pdf',
+        'Фізика': 'books/fizika.pdf',
+        'Хімія': 'books/himiya.pdf',
         'Біологія': '',
-        'Історія України': 'istoriyaukraine.pdf',
-        'Алгебра': 'algebra.pdf',
-        'Геометрія': 'geometriya.pdf',
-        'Зарубіжна література': 'zarybizhnaliteratyra.pdf',
-        'Німецька мова': 'nemeckiy.pdf',
-        'Правознавство': 'pravoznavstvo.pdf',
-        'Громадянська освіта': 'gromadyanskaosvita.pdf',
-        'Фінансова грамотність': 'finansovagramotnist.pdf'
+        'Історія України': 'books/istoriyaukraine.pdf',
+        'Алгебра': 'books/algebra.pdf',
+        'Геометрія': 'books/geometriya.pdf',
+        'Зарубіжна література': 'books/zarybizhnaliteratyra.pdf',
+        'Німецька мова': 'books/nemeckiy.pdf',
+        'Правознавство': 'books/pravoznavstvo.pdf',
+        'Громадянська освіта': 'books/gromadyanskaosvita.pdf',
+        'Фінансова грамотність': 'books/finansovagramotnist.pdf'
       };
       let subjectPdfMap = JSON.parse(JSON.stringify(defaultPdfMap));
       const lessonDuration = 30;
       const blockedPdfKeys = new Set(['Математика', 'Захист вітчизни']);
       const STORAGE_KEYS = {
-        selectedDay: 'outland.selectedDay',
-        adminMode: 'outland.adminMode',
-        darkMode: 'outland.darkMode',
-        accentColor: 'outland.accentColor',
-        language: 'outland.language'
+        selectedDay: 'sputnik.selectedDay',
+        adminMode: 'sputnik.adminMode',
+        darkMode: 'sputnik.darkMode',
+        accentColor: 'sputnik.accentColor',
+        language: 'sputnik.language'
       };
+      // миграция со старых ключей outland -> sputnik
+      try {
+        const migrate = (oldK, newK) => {
+          if (!localStorage.getItem(newK) && localStorage.getItem(oldK)) {
+            localStorage.setItem(newK, localStorage.getItem(oldK));
+          }
+        };
+        migrate('outland.selectedDay','sputnik.selectedDay');
+        migrate('outland.adminMode','sputnik.adminMode');
+        migrate('outland.darkMode','sputnik.darkMode');
+        migrate('outland.accentColor','sputnik.accentColor');
+        migrate('outland.dayNoticeMap','sputnik.dayNoticeMap');
+        migrate('outland.deviceId','sputnik.deviceId');
+      } catch(e) {}
 
       function normalizePdfMap(rawMap = {}) {
         const merged = Object.assign({}, JSON.parse(JSON.stringify(defaultPdfMap)), rawMap || {});
@@ -413,7 +467,7 @@
       let dayNoticeMap = {};
       let isAdmin = localStorage.getItem(STORAGE_KEYS.adminMode) === '1';
       let siteState = {
-        pageTitle: 'Outland',
+        pageTitle: 'Sputnik',
         subtitle: '9-Г',
         schedule: JSON.parse(JSON.stringify(defaultSchedule))
       };
@@ -621,10 +675,15 @@
         if (isAdmin) {
           fillNoticeDaySelect();
           const day = selectedDay || dayNames[0];
-          const notice = dayNoticeMap[day];
+          const notices = normalizeNoticeList(dayNoticeMap[day]);
+          const notice = notices[0] || { text: defaultNoticeText, type: 'warning' };
           const textInput = document.getElementById('noticeTextInput');
+          const typeSelect = document.getElementById('noticeTypeSelect');
           if (textInput) {
-            textInput.value = notice && notice.text ? notice.text : defaultNoticeText;
+            textInput.value = notice.text || defaultNoticeText;
+          }
+          if (typeSelect) {
+            typeSelect.value = notice.type || 'warning';
           }
         }
       }
@@ -642,30 +701,68 @@
         selector.value = selectedDay || dayNames[0];
       }
 
+      function normalizeNoticeList(value) {
+        if (Array.isArray(value)) {
+          return value.filter((item) => item && typeof item === 'object' && String(item.text || '').trim());
+        }
+
+        if (value && typeof value === 'object' && String(value.text || '').trim()) {
+          return [{ enabled: value.enabled !== false, text: value.text, type: value.type || 'warning' }];
+        }
+
+        return [];
+      }
+
+      function getNoticeEntriesForDay(day) {
+        const value = dayNoticeMap[day];
+        return normalizeNoticeList(value);
+      }
+
+      function escapeHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+      function formatNoticeText(text) {
+        const escaped = escapeHtml(text);
+        const viberIcon = '<span class="viber-inline" aria-hidden="true"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#7360F2" d="M11.4 0C9.473.028 5.333.344 3.02 2.467 1.302 4.187.696 6.7.633 9.817.57 12.933.488 18.776 6.12 20.36h.003l-.004 2.416s-.037.977.61 1.177c.777.242 1.234-.5 1.98-1.302.407-.44.972-1.084 1.397-1.58 3.85.326 6.812-.416 7.15-.525.776-.252 5.176-.816 5.892-6.657.74-6.02-.36-9.83-2.34-11.546-.596-.55-3.006-2.3-8.375-2.323 0 0-.395-.025-1.037-.017zm.058 1.693c.545-.004.88.017.88.017 4.542.02 6.717 1.388 7.222 1.846 1.675 1.435 2.53 4.868 1.906 9.897v.002c-.604 4.878-4.174 5.184-4.832 5.395-.28.09-2.882.737-6.153.524 0 0-2.436 2.94-3.197 3.704-.12.12-.26.167-.352.144-.13-.033-.166-.188-.165-.414l.02-4.018c-4.762-1.32-4.485-6.292-4.43-8.895.054-2.604.543-4.738 1.996-6.173 1.96-1.773 5.474-2.018 7.11-2.03zm.38 2.602c-.167 0-.303.135-.304.302 0 .167.133.303.3.305 1.624.01 2.946.537 4.028 1.592 1.073 1.046 1.62 2.468 1.633 4.334.002.167.14.3.307.3.166-.002.3-.138.3-.304-.014-1.984-.618-3.596-1.816-4.764-1.19-1.16-2.692-1.753-4.447-1.765zm-3.96.695c-.19-.032-.4.005-.616.117l-.01.002c-.43.247-.816.562-1.146.932-.002.004-.006.004-.008.008-.267.323-.42.638-.46.948-.008.046-.01.093-.007.14 0 .136.022.27.065.4l.013.01c.135.48.473 1.276 1.205 2.604.42.768.903 1.5 1.446 2.186.27.344.56.673.87.984l.132.132c.31.308.64.6.984.87.686.543 1.418 1.027 2.186 1.447 1.328.733 2.126 1.07 2.604 1.206l.01.014c.13.042.265.064.402.063.046.002.092 0 .138-.008.31-.036.627-.19.948-.46.004 0 .003-.002.008-.005.37-.33.683-.72.93-1.148l.003-.01c.225-.432.15-.842-.18-1.12-.004 0-.698-.58-1.037-.83-.36-.255-.73-.492-1.113-.71-.51-.285-1.032-.106-1.248.174l-.447.564c-.23.283-.657.246-.657.246-3.12-.796-3.955-3.955-3.955-3.955s-.037-.426.248-.656l.563-.448c.277-.215.456-.737.17-1.248-.217-.383-.454-.756-.71-1.115-.25-.34-.826-1.033-.83-1.035-.137-.165-.31-.265-.502-.297zm4.49.88c-.158.002-.29.124-.3.282-.01.167.115.312.282.324 1.16.085 2.017.466 2.645 1.15.63.688.93 1.524.906 2.57-.002.168.13.306.3.31.166.003.305-.13.31-.297.025-1.175-.334-2.193-1.067-2.994-.74-.81-1.777-1.253-3.05-1.346h-.024zm.463 1.63c-.16.002-.29.127-.3.287-.008.167.12.31.288.32.523.028.875.175 1.113.422.24.245.388.62.416 1.164.01.167.15.295.318.287.167-.008.295-.15.287-.317-.03-.644-.215-1.178-.58-1.557-.367-.378-.893-.574-1.52-.607h-.018z"/></svg></span>';
+        return escaped.replace(/Viber/gi, (m) => `${m}${viberIcon}`);
+      }
+
       function renderDailyNotice() {
         const bar = document.getElementById('dailyNoticeBar');
         if (!bar) return;
 
-        const activeNotice = dayNoticeMap[selectedDay];
-        if (!activeNotice || !activeNotice.enabled || !activeNotice.text) {
+        const activePanel = document.querySelector('.panel.active');
+        if (activePanel && activePanel.id === 'subjects-panel') {
+          bar.classList.add('hidden');
+          bar.innerHTML = '';
+          return;
+        }
+
+        const entries = getNoticeEntriesForDay(selectedDay);
+        if (!entries.length) {
           bar.classList.add('hidden');
           bar.innerHTML = '';
           return;
         }
 
         bar.classList.remove('hidden');
-        bar.innerHTML = `
-          <div class="daily-notice__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2.5a9.5 9.5 0 1 1 0 19 9.5 9.5 0 0 1 0-19Zm0 4.2a1.1 1.1 0 0 0-1.1 1.1v5.4a1.1 1.1 0 1 0 2.2 0V7.8A1.1 1.1 0 0 0 12 6.7Zm0 10.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z" fill="currentColor"/>
-            </svg>
-          </div>
-          <div class="daily-notice__content">${activeNotice.text}</div>
-        `;
+        bar.innerHTML = entries.map((entry) => {
+          const type = entry.type === 'admin' ? 'admin' : 'warning';
+          return `
+            <div class="daily-notice-item daily-notice-item--${type}">
+              <div class="daily-notice__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2.5a9.5 9.5 0 1 1 0 19 9.5 9.5 0 0 1 0-19Zm0 4.2a1.1 1.1 0 0 0-1.1 1.1v5.4a1.1 1.1 0 1 0 2.2 0V7.8A1.1 1.1 0 0 0 12 6.7Zm0 10.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="daily-notice__content">${formatNoticeText(entry.text)}</div>
+            </div>
+          `;
+        }).join('');
       }
 
       function persistNoticeMap() {
-        localStorage.setItem('outland.dayNoticeMap', JSON.stringify(dayNoticeMap || {}));
+        localStorage.setItem('sputnik.dayNoticeMap', JSON.stringify(dayNoticeMap || {}));
         if (!db) return;
         set(ref(db, 'site/notices'), dayNoticeMap).catch(() => {
           // Firebase rules can block writes; keep local-only fallback for this browser.
@@ -674,7 +771,7 @@
 
       function loadNoticeMapFromLocal() {
         try {
-          const raw = localStorage.getItem('outland.dayNoticeMap');
+          const raw = localStorage.getItem('sputnik.dayNoticeMap');
           if (!raw) return {};
           const parsed = JSON.parse(raw);
           return parsed && typeof parsed === 'object' ? parsed : {};
@@ -686,15 +783,22 @@
       function saveNoticeForSelectedDay() {
         const selector = document.getElementById('noticeDaySelect');
         const textInput = document.getElementById('noticeTextInput');
+        const typeSelect = document.getElementById('noticeTypeSelect');
         if (!selector || !textInput) return;
         const day = selector.value;
         const text = (textInput.value || '').trim();
+        const type = (typeSelect && typeSelect.value) || 'warning';
         if (!day) return;
 
         if (!text) {
           delete dayNoticeMap[day];
         } else {
-          dayNoticeMap[day] = { enabled: true, text };
+          const existing = normalizeNoticeList(dayNoticeMap[day]);
+          const nextEntries = [
+            ...existing.filter((item) => item.text !== text || (item.type || 'warning') !== type),
+            { enabled: true, text, type }
+          ];
+          dayNoticeMap[day] = nextEntries;
         }
 
         persistNoticeMap();
@@ -1055,33 +1159,21 @@
       }
 
       function fillAdminForm() {
-        document.getElementById('adminTitleInput').value = siteState.pageTitle;
-        document.getElementById('adminSubtitleInput').value = siteState.subtitle;
-        document.getElementById('adminScheduleInput').value = JSON.stringify(siteState.schedule, null, 2);
-        document.getElementById('adminPdfInput').value = JSON.stringify(siteState.pdfs || subjectPdfMap, null, 2);
+        const titleInput = document.getElementById('adminTitleInput');
+        const subtitleInput = document.getElementById('adminSubtitleInput');
+        if (titleInput) titleInput.value = siteState.pageTitle;
+        if (subtitleInput) subtitleInput.value = siteState.subtitle;
       }
 
       async function saveAdminChanges() {
-        let schedule;
-        let pdfs;
-        try {
-          schedule = JSON.parse(document.getElementById('adminScheduleInput').value);
-          try {
-            pdfs = JSON.parse(document.getElementById('adminPdfInput').value || '{}');
-          } catch (e) {
-            alert('Невірний JSON для підручників.');
-            return;
-          }
-        } catch (error) {
-          alert('Невірний JSON. Перевірте розклад.');
-          return;
-        }
+        const titleInput = document.getElementById('adminTitleInput');
+        const subtitleInput = document.getElementById('adminSubtitleInput');
 
         const nextState = {
-          pageTitle: document.getElementById('adminTitleInput').value.trim() || 'Outland',
-          subtitle: document.getElementById('adminSubtitleInput').value.trim() || '9-Г',
-          schedule,
-          pdfs: pdfs || {},
+          pageTitle: (titleInput ? titleInput.value.trim() : '') || 'Sputnik',
+          subtitle: (subtitleInput ? subtitleInput.value.trim() : '') || '9-Г',
+          schedule: clone(defaultSchedule),
+          pdfs: normalizePdfMap(subjectPdfMap || defaultPdfMap),
           updatedAt: Date.now()
         };
 
@@ -1091,7 +1183,7 @@
 
       async function resetAdminChanges() {
         siteState = {
-          pageTitle: 'Outland',
+          pageTitle: 'Sputnik',
           subtitle: '9-Г',
           schedule: clone(defaultSchedule),
           pdfs: JSON.parse(JSON.stringify(defaultPdfMap)),
@@ -1101,10 +1193,10 @@
       }
 
       function getDeviceId() {
-        const existing = localStorage.getItem('outland.deviceId');
+        const existing = localStorage.getItem('sputnik.deviceId');
         if (existing) return existing;
         const generated = crypto.randomUUID ? crypto.randomUUID() : `device-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-        localStorage.setItem('outland.deviceId', generated);
+        localStorage.setItem('sputnik.deviceId', generated);
         return generated;
       }
 
@@ -1245,6 +1337,8 @@
         );
       }
 
+      let lastSecretToggleAt = 0;
+
       function isSecretToggleKey(event) {
         if (event.repeat) return false;
         const key = String(event.key || '');
@@ -1313,6 +1407,14 @@
           }
 
           if (isSecretToggleKey(event)) {
+            const target = event.target;
+            const inFormField = target && (target.matches && (target.matches('input, textarea, select') || target.closest('input, textarea, select')));
+            if (inFormField) return;
+
+            const now = Date.now();
+            if (now - lastSecretToggleAt < 350) return;
+            lastSecretToggleAt = now;
+
             event.preventDefault();
             if (secretPopupOpen) {
               hideSecretPopup();
@@ -1373,8 +1475,12 @@
         document.getElementById('clearNoticeBtn').addEventListener('click', clearNoticeForSelectedDay);
         document.getElementById('noticeDaySelect').addEventListener('change', (event) => {
           const day = event.target.value;
-          const notice = dayNoticeMap[day];
-          document.getElementById('noticeTextInput').value = notice && notice.text ? notice.text : defaultNoticeText;
+          const notices = normalizeNoticeList(dayNoticeMap[day]);
+          const activeNotice = notices[0] || { text: defaultNoticeText, type: 'warning' };
+          const typeSelect = document.getElementById('noticeTypeSelect');
+          const textInput = document.getElementById('noticeTextInput');
+          if (typeSelect) typeSelect.value = activeNotice.type || 'warning';
+          if (textInput) textInput.value = activeNotice.text || defaultNoticeText;
         });
       }
 
@@ -1389,7 +1495,7 @@
             const forcedSchedule = clone(defaultSchedule);
             const mergedPdfs = normalizePdfMap(data.pdfs || {});
             siteState = {
-              pageTitle: data.pageTitle || 'Outland',
+              pageTitle: (data.pageTitle === 'Outland' ? 'Sputnik' : data.pageTitle) || 'Sputnik',
               subtitle: subtitle,
               schedule: forcedSchedule,
               pdfs: mergedPdfs
@@ -1406,7 +1512,7 @@
             const forcedSchedule = clone(defaultSchedule);
             const merged = normalizePdfMap(data.pdfs || {});
             siteState = {
-              pageTitle: data.pageTitle || 'Outland',
+              pageTitle: (data.pageTitle === 'Outland' ? 'Sputnik' : data.pageTitle) || 'Sputnik',
               subtitle: data.subtitle || '9-Г',
               schedule: forcedSchedule,
               pdfs: merged
