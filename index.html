@@ -100,7 +100,7 @@
             <span class="dot dot-yellow"></span>
             <span class="dot dot-green"></span>
           </div>
-          <div class="console-title">C:\WINDOWS\system32\</div>
+          <div class="console-title">yono console</div>
           <div class="console-actions">
             <button class="console-action" type="button" aria-label="Свернуть">—</button>
             <button class="console-action" type="button" aria-label="Развернуть">□</button>
@@ -108,14 +108,9 @@
           </div>
         </div>
         <div class="console-body">
-          <div class="console-line console-prompt">C:\Users\Admin&gt; <span id="consoleGhostText">_</span></div>
           <div class="console-input-wrap">
-            <span class="console-prefix">C:\Users\Admin&gt;</span>
+            <span class="console-prefix">yono&gt;</span>
             <input id="secretInput" class="secret-input" type="text" autocomplete="off" spellcheck="false" aria-label="Команда" />
-          </div>
-          <div class="secret-actions">
-            <button class="ghost-btn" id="secretCancel" type="button">Закрити</button>
-            <button class="primary-btn" id="secretSubmit" type="button">Ввести</button>
           </div>
         </div>
       </div>
@@ -230,6 +225,7 @@
     </div>
 
     <script src="subject-links.js"></script>
+    <script src="secret.js"></script>
     <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
       import {
@@ -721,14 +717,35 @@
         }
       }
 
+      let secretPopupOpen = false;
+
       function showSecretPopup() {
-        document.getElementById('secretPopup').classList.remove('hidden');
-        document.getElementById('secretInput').value = '';
-        setTimeout(() => document.getElementById('secretInput').focus(), 50);
+        const popup = document.getElementById('secretPopup');
+        const input = document.getElementById('secretInput');
+        if (!popup || !input) return;
+
+        popup.classList.remove('hidden');
+        popup.setAttribute('aria-hidden', 'false');
+        secretPopupOpen = true;
+        input.value = '';
+        setTimeout(() => {
+          if (popup && !popup.classList.contains('hidden')) {
+            input.focus();
+            input.select();
+          }
+        }, 50);
       }
 
       function hideSecretPopup() {
-        document.getElementById('secretPopup').classList.add('hidden');
+        const popup = document.getElementById('secretPopup');
+        if (!popup) return;
+
+        popup.classList.add('hidden');
+        popup.setAttribute('aria-hidden', 'true');
+        secretPopupOpen = false;
+
+        const input = document.getElementById('secretInput');
+        if (input) input.value = '';
       }
 
       function activateAdminMode() {
@@ -745,8 +762,14 @@
       }
 
       function handleSecretCommand(command) {
+        const secretData = window.__YONO_SECRET__ || {};
+        const allowed = new Set([
+          String(secretData.password || '').trim().toLowerCase(),
+          ...(Array.isArray(secretData.aliases) ? secretData.aliases.map((value) => String(value || '').trim().toLowerCase()) : [])
+        ]);
         const normalized = String(command || '').trim().toLowerCase();
-        if (normalized === '30' || normalized === 'auth\\yono' || normalized === 'auth/yono') {
+
+        if (allowed.has(normalized)) {
           activateAdminMode();
           const selector = document.getElementById('noticeDaySelect');
           if (selector) selector.value = selectedDay || dayNames[0];
@@ -1207,6 +1230,28 @@
         });
       }
 
+      function isDevToolsShortcut(event) {
+        const key = String(event.key || '').toLowerCase();
+        const code = String(event.code || '');
+        const isModifierCombo = (event.ctrlKey || event.metaKey) && (event.shiftKey || event.altKey);
+
+        return (
+          event.key === 'F12' ||
+          code === 'F12' ||
+          (event.altKey && key === 'd') ||
+          ((event.ctrlKey || event.metaKey) && key === 'u') ||
+          (isModifierCombo && ['i', 'c', 'j', 'k'].includes(key)) ||
+          ((event.ctrlKey || event.metaKey) && event.shiftKey && ['i', 'c', 'j', 'k'].includes(key))
+        );
+      }
+
+      function isSecretToggleKey(event) {
+        if (event.repeat) return false;
+        const key = String(event.key || '');
+        const code = String(event.code || '');
+        return key === 'ё' || key === 'Ё' || key === '`' || key === '~' || code === 'Backquote';
+      }
+
       function bindEvents() {
         tabs.forEach((tab) => {
           tab.addEventListener('click', () => {
@@ -1232,7 +1277,14 @@
           el.addEventListener('click', () => setAccentColor(el.dataset.color));
         });
 
-        // Close settings when clicking outside
+        document.addEventListener('contextmenu', (event) => {
+          const target = event.target;
+          if (target && (target.closest('input') || target.closest('textarea') || target.closest('select'))) {
+            return;
+          }
+          event.preventDefault();
+        }, { passive: false });
+
         document.addEventListener('click', (e) => {
           const settingsPanel = document.getElementById('settingsPanel');
           const settingsBtn = document.getElementById('settingsBtn');
@@ -1241,18 +1293,37 @@
           }
         });
 
-        document.getElementById('secretCancel').addEventListener('click', hideSecretPopup);
-        document.querySelector('.console-action-close').addEventListener('click', hideSecretPopup);
-        document.getElementById('secretSubmit').addEventListener('click', () => {
-          handleSecretCommand(document.getElementById('secretInput').value);
-        });
-        document.getElementById('secretInput').addEventListener('keydown', (event) => {
-          if (event.key === 'Enter') handleSecretCommand(event.target.value);
-          if (event.key === 'Escape') hideSecretPopup();
+        document.querySelectorAll('.console-action-close').forEach((button) => {
+          button.addEventListener('click', hideSecretPopup);
         });
 
+        const secretInput = document.getElementById('secretInput');
+        if (secretInput) {
+          secretInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') handleSecretCommand(event.target.value);
+            if (event.key === 'Escape') hideSecretPopup();
+          });
+        }
+
         document.addEventListener('keydown', (event) => {
-          if (event.key === 'Escape' && !document.getElementById('secretPopup').classList.contains('hidden')) {
+          if (isDevToolsShortcut(event)) {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+          }
+
+          if (isSecretToggleKey(event)) {
+            event.preventDefault();
+            if (secretPopupOpen) {
+              hideSecretPopup();
+            } else {
+              showSecretPopup();
+            }
+            return false;
+          }
+
+          if (event.key === 'Escape' && secretPopupOpen) {
+            event.preventDefault();
             hideSecretPopup();
           }
         });
@@ -1304,13 +1375,6 @@
           const day = event.target.value;
           const notice = dayNoticeMap[day];
           document.getElementById('noticeTextInput').value = notice && notice.text ? notice.text : defaultNoticeText;
-        });
-
-        document.addEventListener('keydown', (event) => {
-          if (event.key === 'ё' || event.key === '`' || event.key === '~') {
-            event.preventDefault();
-            showSecretPopup();
-          }
         });
       }
 

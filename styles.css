@@ -743,34 +743,6 @@ tbody td.today-cell {
   color: rgba(255,255,255,0.25);
 }
 
-.secret-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 18px;
-}
-
-#secretCancel,
-#secretSubmit {
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.15);
-  padding: 8px 14px;
-  font-family: inherit;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-#secretCancel {
-  background: rgba(255,255,255,0.04);
-  color: #f0f3f7;
-}
-
-#secretSubmit {
-  background: linear-gradient(180deg, #1a2b3d 0%, #122638 100%);
-  color: #dff7ff;
-}
-
 .console-prompt {
   color: #c9e6ff;
 }
