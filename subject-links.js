@@ -2,7 +2,7 @@ window.subjectMeetConfig = {
   "Англійська": "https://meet.google.com/phi-dznq-yrg?authuser=6",
   "Англійська мова": "https://meet.google.com/phi-dznq-yrg?authuser=6",
   "Алгебра": "https://meet.google.com/vni-cwzx-jxj?authuser=6&hs=179",
-  "Геометрія": "https://meet.google.com/phi-dznq-yrg?authuser=6",
+  "Геометрія": "https://meet.google.com/zws-doix-hki?authuser=6&hs=179",
   "Фізична культура": "",
   "Фінансова грамотність": "",
   "Правознавство": "",
