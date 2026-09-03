@@ -1429,6 +1429,10 @@ body.dark-mode .daily-notice-item {
   background: rgba(242,157,47,0.10);
   border-color: rgba(242,157,47,0.35);
   box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+  color: #f2f2f3;
+}
+body.dark-mode .daily-notice__content {
+  color: #f2f2f3;
 }
 body.dark-mode .daily-notice-item--admin {
   background: rgba(42, 139, 194, 0.2);
