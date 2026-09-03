@@ -526,16 +526,9 @@ body.loaded .page {
 }
 
 .daily-notice {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: grid;
+  gap: 10px;
   margin: 0 0 18px;
-  padding: 14px 18px;
-  border: 2px solid #f29d2f;
-  background: rgba(255, 170, 60, 0.12);
-  border-radius: 16px;
-  color: var(--dark);
-  box-shadow: 4px 4px 0 rgba(242, 157, 47, 0.25);
 }
 
 .daily-notice.hidden {
@@ -552,6 +545,19 @@ body.loaded .page {
   align-items: center;
   gap: 12px;
   width: 100%;
+  min-width: 0;
+  padding: 14px 18px;
+  border: 2px solid #f29d2f;
+  background: rgba(255, 170, 60, 0.12);
+  border-radius: 16px;
+  color: var(--dark);
+  box-shadow: 4px 4px 0 rgba(242, 157, 47, 0.25);
+}
+
+.daily-notice-item--admin {
+  border-color: #4aa3df;
+  background: rgba(112, 196, 245, 0.2);
+  box-shadow: 4px 4px 0 rgba(74, 163, 223, 0.25);
 }
 
 .daily-notice__icon {
@@ -561,6 +567,10 @@ body.loaded .page {
   place-items: center;
   color: #f29900;
   flex-shrink: 0;
+}
+
+.daily-notice-item--admin .daily-notice__icon {
+  color: #1684c4;
 }
 
 .daily-notice__icon svg {
@@ -1413,13 +1423,22 @@ body.dark-mode .info-value svg {
 
 /* daily notice */
 body.dark-mode .daily-notice {
+  color: #f2f2f3;
+}
+body.dark-mode .daily-notice-item {
   background: rgba(242,157,47,0.10);
   border-color: rgba(242,157,47,0.35);
   box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
-  color: #f2f2f3;
+}
+body.dark-mode .daily-notice-item--admin {
+  background: rgba(42, 139, 194, 0.2);
+  border-color: rgba(74, 163, 223, 0.65);
 }
 body.dark-mode .daily-notice__icon {
   color: #f5a623;
+}
+body.dark-mode .daily-notice-item--admin .daily-notice__icon {
+  color: #70c8f5;
 }
 
 /* schedule */
