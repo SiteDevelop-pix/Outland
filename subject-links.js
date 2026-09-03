@@ -13,7 +13,7 @@ window.subjectMeetConfig = {
 
   "Географія": "https://meet.google.com/jud-yrfg-juh?authuser=6&hs=179",
   "Українська мова": "https://meet.google.com/mwi-ejzd-ymz?authuser=6&hs=179",
-  "Українська література": "https://meet.google.com/yvh-qfer-rqt?authuser=6",
+  "Українська література": "https://meet.google.com/mwi-ejzd-ymz?authuser=6&hs=179",
   "Фізика": "https://meet.google.com/szn-nzfn-cwh?authuser=6&hs=179",
   "Хімія": "https://meet.google.com/ruw-bgqp-rkw?authuser=6&hs=179",
   "Біологія": "https://meet.google.com/mmr-jytx-onj?authuser=6&hs=179",
