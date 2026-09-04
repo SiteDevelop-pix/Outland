@@ -42,6 +42,7 @@ window.sputnikSchedule = {
     { number: 3, time: '09:20', subject: 'Алгебра' },
     { number: 4, time: '10:00', subject: 'Біологія' },
     { number: 5, time: '10:40', subject: 'Хімія' },
-    { number: 6, time: '11:20', subject: 'Інформатика' }
+    { number: 6, time: '11:20', subject: 'Інформатика' },
+    { number: 7, time: '12:20', subject: "Здоров'я, безпека та добробут" }
   ]
 };

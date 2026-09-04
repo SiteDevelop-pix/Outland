@@ -94,6 +94,15 @@
           <span class="info-label">Наступний урок</span>
           <div class="info-value" id="nextLessonLabel">Завантаження...</div>
         </div>
+        <div class="info-card week-card" id="weekCard">
+          <span class="info-label">Тиждень <small id="weekAutoMark" style="opacity:.6;font-weight:700"></small></span>
+          <div class="info-value"><span id="weekLabel">1</span></div>
+          <div class="week-tumbler" role="group" aria-label="Перемикач тижня">
+            <button type="button" class="week-btn" data-week="1">1</button>
+            <button type="button" class="week-btn" data-week="2">2</button>
+            <button type="button" class="week-btn week-btn-auto" data-week="auto" title="Авто (за датою)">Авто</button>
+          </div>
+        </div>
       </div>
 
       <div id="dailyNoticeBar" class="daily-notice hidden" aria-live="polite"></div>
@@ -317,6 +326,10 @@
         accentColor: 'sputnik.accentColor',
         language: 'sputnik.language'
       };
+      // тумблер проверки недель: '1'|'2'|null(авто)
+      let forcedWeek = localStorage.getItem('sputnik.forcedWeek'); // null = авто
+      if (forcedWeek !== '1' && forcedWeek !== '2') forcedWeek = null;
+
       // миграция со старых ключей outland -> sputnik
       try {
         const migrate = (oldK, newK) => {
@@ -400,6 +413,27 @@
       };
 
       const defaultSchedule = window.sputnikSchedule;
+
+      // Тиждень 2 — заміни по ТЗ
+      const week2Overrides = {
+        'Четвер': [
+          { number: 1, time: '08:00', subject: 'Українська мова' },
+          { number: 2, time: '08:40', subject: 'Правознавство' },
+          { number: 3, time: '09:20', subject: 'Геометрія' },
+          { number: 4, time: '10:00', subject: 'Українська література' },
+          { number: 5, time: '10:40', subject: 'Фізика' },
+          { number: 6, time: '11:20', subject: 'Німецька мова' },
+          { number: 7, time: '12:20', subject: 'Фізична культура' }
+        ],
+        "П'ятниця": [
+          { number: 1, time: '08:00', subject: 'Фізика' },
+          { number: 2, time: '08:40', subject: 'Англійська мова' },
+          { number: 3, time: '09:20', subject: 'Алгебра' },
+          { number: 4, time: '10:00', subject: 'Географія' },
+          { number: 5, time: '10:40', subject: 'Хімія' },
+          { number: 6, time: '11:20', subject: 'Фінансова грамотність' },
+        ]
+      };
 
       const defaultNoticeText = 'Увага! В цей день у розкладі уроків могли бути зміни. Перегляньте групу класа у Viber.';
       let selectedDay = 'Понеділок';
@@ -542,6 +576,50 @@
         return !dayNames.includes(getCurrentKyivDayName());
       }
 
+      function getWeekType() {
+        if (forcedWeek === '1') return 1;
+        if (forcedWeek === '2') return 2;
+        const { year, month, day } = getKyivParts();
+        const cur = Date.UTC(year, month - 1, day);
+        const start = Date.UTC(2025, 8, 1); // 2025-09-01 старт навчального року
+        const diff = Math.floor((cur - start) / 86400000);
+        if (diff < 0) return 1;
+        const w = Math.floor(diff / 7) + 1;
+        return (w % 2 === 1) ? 1 : 2;
+      }
+      function setWeekType(v) {
+        if (v === '1' || v === '2') {
+          forcedWeek = v;
+          localStorage.setItem('sputnik.forcedWeek', v);
+        } else {
+          forcedWeek = null;
+          localStorage.removeItem('sputnik.forcedWeek');
+        }
+        updateWeekTumblerUI();
+        refreshViews();
+      }
+      function updateWeekTumblerUI() {
+        const auto = forcedWeek === null;
+        document.querySelectorAll('.week-btn').forEach(b=>{
+          const w = b.dataset.week;
+          b.classList.toggle('active', (auto && w==='auto') || (!auto && w===forcedWeek));
+        });
+        const mark = document.getElementById('weekAutoMark');
+        if (mark) mark.textContent = auto ? '• авто' : '';
+      }
+      function getWeeklySchedule(base) {
+        const wt = getWeekType();
+        if (wt !== 2) return base;
+        const copy = JSON.parse(JSON.stringify(base));
+        for (const d of Object.keys(week2Overrides)) {
+          copy[d] = JSON.parse(JSON.stringify(week2Overrides[d]));
+        }
+        return copy;
+      }
+      function getEffectiveSchedule() {
+        return getWeeklySchedule(siteState.schedule);
+      }
+
       function getTimeMinutes(value) {
         const [hours, minutes] = value.split(':').map(Number);
         return hours * 60 + minutes;
@@ -567,7 +645,7 @@
       function checkLessonReminder() {
         if (isWeekendNow()) return;
 
-        const lessons = siteState.schedule[selectedDay] || [];
+        const lessons = getEffectiveSchedule()[selectedDay] || [];
         const nowMinutes = getKyivMinutesNow();
         const nextLesson = lessons.find((lesson) => nowMinutes < getTimeMinutes(lesson.time));
         if (!nextLesson) return;
@@ -838,7 +916,7 @@
           return;
         }
 
-        const lessons = siteState.schedule[selectedDay] || [];
+        const lessons = getEffectiveSchedule()[selectedDay] || [];
         const nowMinutes = getKyivMinutesNow();
         subjectGrid.innerHTML = '';
 
@@ -992,8 +1070,8 @@
           return;
         }
 
-        const lessons = siteState.schedule[selectedDay] || [];
-        scheduleTitle.textContent = `Розклад · ${selectedDay}`;
+        const lessons = getEffectiveSchedule()[selectedDay] || [];
+        scheduleTitle.textContent = `Розклад · ${selectedDay} · Тиждень ${getWeekType()}`;
         scheduleBody.innerHTML = '';
 
         lessons.forEach((lesson) => {
@@ -1019,6 +1097,8 @@
         const todayLabel = document.getElementById('todayLabel');
         const nextLessonLabel = document.getElementById('nextLessonLabel');
         const todayName = getCurrentKyivDayName();
+        const weekEl = document.getElementById('weekLabel');
+        if (weekEl) weekEl.textContent = getWeekType();
 
         if (isWeekendNow()) {
           todayLabel.textContent = 'Вихідний';
@@ -1027,7 +1107,7 @@
         }
 
         todayLabel.textContent = todayName;
-        const lessons = siteState.schedule[selectedDay] || [];
+        const lessons = getEffectiveSchedule()[selectedDay] || [];
         const nowMinutes = getKyivMinutesNow();
 
         const activeLesson = lessons.find((lesson) => {
@@ -1288,6 +1368,10 @@
           el.addEventListener('click', () => setAccentColor(el.dataset.color));
         });
 
+        document.querySelectorAll('.week-btn').forEach(b=>{
+          b.addEventListener('click', ()=> setWeekType(b.dataset.week));
+        });
+
         document.addEventListener('contextmenu', (event) => {
           const target = event.target;
           if (target && (target.closest('input') || target.closest('textarea') || target.closest('select'))) {
@@ -1474,6 +1558,7 @@
       applySettings();
       updateSettingsUI();
       fillAdminForm();
+      updateWeekTumblerUI();
       initDatabase();
       startPresence();
       refreshViews();
