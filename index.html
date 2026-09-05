@@ -250,6 +250,9 @@
           <div class="color-option green" data-color="green" title="Зелений"></div>
           <div class="color-option blue" data-color="blue" title="Синій"></div>
           <div class="color-option red" data-color="red" title="Червоний"></div>
+          <label class="custom-color-option" title="Власний колір">
+            <input type="color" id="customColorPicker" aria-label="Власний колір" value="#f5d000" />
+          </label>
         </div>
       </div>
 
@@ -287,12 +290,10 @@
       const tabs = document.querySelectorAll('.tab');
       const panels = document.querySelectorAll('.panel');
       const dayNames = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', "П'ятниця"];
+      const allDayNames = [...dayNames, 'Субота', 'Неділя'];
       const meetWebLink = 'https://meet.google.com/hjj-irbi-bfv?authuser=0';
       const subjectMeetMap = window.subjectMeetConfig || {};
-      const informaticsGroupLinks = {
-        '1 група': 'https://meet.google.com/vze-fugv-wkr?authuser=6&hs=179',
-        '2 група': 'https://meet.google.com/uyq-czck-bot'
-      };
+      const informaticsGroupLinks = window.informaticsGroupConfig || {};
       const clickSound = new Audio('sounds/clicksound.wav');
       const lessonSound = new Audio('sounds/soundlesson.mp3');
       clickSound.volume = 0.2;
@@ -470,7 +471,10 @@
           red: { primary: '#ff3333', strong: '#ff6666', soft: '#ff9999' }
         };
 
-        const colors = colorMap[userSettings.accentColor];
+        const customColor = /^#[0-9a-f]{6}$/i.test(userSettings.accentColor) ? userSettings.accentColor : null;
+        const colors = customColor
+          ? { primary: customColor, strong: customColor, soft: customColor }
+          : (colorMap[userSettings.accentColor] || colorMap.yellow);
         document.documentElement.style.setProperty('--yellow', colors.primary);
         document.documentElement.style.setProperty('--yellow-strong', colors.strong);
         document.documentElement.style.setProperty('--yellow-soft', colors.soft);
@@ -489,10 +493,15 @@
       }
 
       function setAccentColor(color) {
+        if (!colorMapValueIsValid(color)) return;
         userSettings.accentColor = color;
         applySettings();
         saveSettings();
         updateSettingsUI();
+      }
+
+      function colorMapValueIsValid(color) {
+        return ['yellow', 'green', 'blue', 'red'].includes(color) || /^#[0-9a-f]{6}$/i.test(color);
       }
 
       function updateSettingsUI() {
@@ -508,6 +517,14 @@
             el.classList.remove('active');
           }
         });
+
+        const customColorPicker = document.getElementById('customColorPicker');
+        if (customColorPicker) {
+          customColorPicker.value = /^#[0-9a-f]{6}$/i.test(userSettings.accentColor)
+            ? userSettings.accentColor
+            : '#f5d000';
+          customColorPicker.parentElement.classList.toggle('active', /^#[0-9a-f]{6}$/i.test(userSettings.accentColor));
+        }
 
         // Обновляем текст в панели
         document.getElementById('settingsTitle').textContent = 'Налаштування';
@@ -564,7 +581,7 @@
         const { year, month, day } = getKyivParts();
         const utcDate = Date.UTC(year, month - 1, day);
         const jsDate = new Date(utcDate);
-        return dayNames[(jsDate.getUTCDay() + 6) % 7] || 'Понеділок';
+        return allDayNames[(jsDate.getUTCDay() + 6) % 7] || 'Понеділок';
       }
 
       function getKyivMinutesNow() {
@@ -887,12 +904,6 @@
       function renderDayButtons() {
         const daySwitcher = document.getElementById('daySwitcher');
         daySwitcher.innerHTML = '';
-
-        if (isWeekendNow()) {
-          daySwitcher.style.display = 'none';
-          return;
-        }
-
         daySwitcher.style.display = 'flex';
 
         dayNames.forEach((day) => {
@@ -911,11 +922,6 @@
 
       function renderSubjects() {
         const subjectGrid = document.getElementById('subjectGrid');
-        if (isWeekendNow()) {
-          subjectGrid.innerHTML = '<div class="empty-state">Сьогодні вихідний, відпочивай..</div>';
-          return;
-        }
-
         const lessons = getEffectiveSchedule()[selectedDay] || [];
         const nowMinutes = getKyivMinutesNow();
         subjectGrid.innerHTML = '';
@@ -1063,13 +1069,6 @@
       function renderSchedule() {
         const scheduleBody = document.getElementById('scheduleBody');
         const scheduleTitle = document.getElementById('scheduleTitle');
-
-        if (isWeekendNow()) {
-          scheduleTitle.textContent = 'Розклад';
-          scheduleBody.innerHTML = '';
-          return;
-        }
-
         const lessons = getEffectiveSchedule()[selectedDay] || [];
         scheduleTitle.textContent = `Розклад · ${selectedDay} · Тиждень ${getWeekType()}`;
         scheduleBody.innerHTML = '';
@@ -1101,8 +1100,8 @@
         if (weekEl) weekEl.textContent = getWeekType();
 
         if (isWeekendNow()) {
-          todayLabel.textContent = 'Вихідний';
-          nextLessonLabel.textContent = '☕ Відпочивай';
+          todayLabel.textContent = todayName;
+          nextLessonLabel.textContent = 'Сьогодні немає уроків.';
           return;
         }
 
@@ -1367,6 +1366,11 @@
         document.querySelectorAll('.color-option').forEach(el => {
           el.addEventListener('click', () => setAccentColor(el.dataset.color));
         });
+
+        const customColorPicker = document.getElementById('customColorPicker');
+        if (customColorPicker) {
+          customColorPicker.addEventListener('input', (event) => setAccentColor(event.target.value));
+        }
 
         document.querySelectorAll('.week-btn').forEach(b=>{
           b.addEventListener('click', ()=> setWeekType(b.dataset.week));

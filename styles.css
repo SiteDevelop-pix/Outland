@@ -1186,6 +1186,37 @@ tbody td.today-cell {
   background: #ff3333;
 }
 
+.custom-color-option {
+  width: 50px;
+  height: 50px;
+  display: block;
+  border: 3px solid var(--dark);
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  position: relative;
+  background: conic-gradient(#f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+}
+
+.custom-color-option:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.custom-color-option.active {
+  box-shadow: 0 0 0 3px var(--dark);
+}
+
+.custom-color-option input {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .toggle-switch {
   display: flex;
   align-items: center;
